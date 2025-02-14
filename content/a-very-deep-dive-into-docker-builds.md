@@ -140,7 +140,7 @@ more.
 
 Here is an overview of our `Dockerfile`:
 
-```dockerfile
+```dockerfile,linenos
 FROM internal.registry/base/ca-bundle:20220405 AS cert-bundle
 
 FROM internal.registry/base/python:3.9.2-slim AS builder
@@ -210,7 +210,7 @@ a different approach. Let's start!
 
 ---
 
-```dockerfile
+```dockerfile,linenos
 FROM internal.registry/base/ca-bundle:20220405 AS cert-bundle
 ```
 
@@ -232,7 +232,7 @@ all). You will note that we will pin every single version in the entire build pr
 
 ---
 
-```dockerfile
+```dockerfile,linenos
 FROM internal.registry/base/python:3.9.2-slim AS builder
 ```
 
@@ -247,7 +247,7 @@ will be no compile step.
 
 ---
 
-```dockerfile
+```dockerfile,linenos,hl_lines=3
 FROM internal.registry/base/python:3.9.2-slim AS builder
 # ...
 COPY --from=cert-bundle /certs/ /usr/local/share/ca-certificates/
@@ -262,7 +262,7 @@ would still need to be generated.
 
 ---
 
-```dockerfile
+```dockerfile,linenos,hl_lines=3
 FROM internal.registry/base/python:3.9.2-slim AS builder
 # ...
 RUN update-ca-certificates
@@ -274,7 +274,7 @@ bundle to validate host certificates on TLS connections.
 
 ---
 
-```dockerfile
+```dockerfile,linenos,hl_lines=3
 FROM internal.registry/base/python:3.9.2-slim AS builder
 # ...
 WORKDIR /app
@@ -288,7 +288,7 @@ the configuration/code.
 
 ---
 
-```dockerfile
+```dockerfile,linenos,hl_lines=3-10
 FROM internal.registry/base/python:3.9.2-slim AS builder
 # ...
 RUN pip install \
@@ -331,7 +331,7 @@ and volume management between the IDE and Docker, ...).
 
 ---
 
-```dockerfile
+```dockerfile,linenos,hl_lines=3-4
 FROM internal.registry/base/python:3.9.2-slim AS builder
 # ...
 ENV PIPENV_VENV_IN_PROJECT=1
@@ -346,7 +346,7 @@ does not use the system configured bundle by default, so it needs to be configur
 
 ---
 
-```dockerfile
+```dockerfile,linenos,hl_lines=3-4
 FROM internal.registry/base/python:3.9.2-slim AS builder
 # ...
 COPY Pipfile Pipfile
@@ -358,7 +358,7 @@ a list of dependencies that we use for our project. The second contains a hash t
 should have, including indirect dependencies (dependencies of dependencies), in order to ensure that
 we always get exactly the same dependency code for very install. The first looks as follows:
 
-```toml
+```toml,linenos
 [[source]]
 url = "https://pypi.org/simple"
 verify_ssl = true
@@ -403,7 +403,7 @@ and update their hashes in the lock file.
 
 ---
 
-```dockerfile
+```dockerfile,linenos,hl_lines=3
 FROM internal.registry/base/python:3.9.2-slim AS builder
 # ...
 RUN pipenv install --deploy
@@ -415,7 +415,7 @@ only the ones needed for the production code.
 
 ---
 
-```dockerfile
+```dockerfile,linenos
 ### Tester image
 FROM builder AS test
 ```
@@ -436,7 +436,7 @@ the `Dockerfile`. Stage comments are typically the only comments we have in the 
 
 ---
 
-```dockerfile
+```dockerfile,linenos,hl_lines=3
 FROM builder AS test
 # ...
 RUN pipenv install --dev --deploy
@@ -448,7 +448,7 @@ ensure we always use the same versions to make the build fully reproducible.
 
 ---
 
-```dockerfile
+```dockerfile,linenos,hl_lines=3-7
 FROM builder AS test
 # ...
 COPY ./pyproject.toml pyproject.toml
@@ -479,7 +479,7 @@ Finally the last line copies in our actual code. This, along with the unit tests
 is most likely to change, and thus comes last. This way on a code change, all lines up to this one
 (assuming we did not add/change tests) can be used from cache.
 
-```toml
+```toml,linenos
 [tool.black]
 line-length = 100
 
@@ -510,7 +510,7 @@ ignore_missing_imports = true
 
 ---
 
-```dockerfile
+```dockerfile,linenos,hl_lines=3-8
 FROM builder AS test
 # ...
 RUN --mount=type=cache,target=./.mypy_cache/ \
@@ -555,7 +555,7 @@ especially when your project grows and the test suites start to take more time t
 
 ---
 
-```dockerfile
+```dockerfile,linenos
 ### Runner image
 FROM internal.registry/base/distroless-python:3.9.2
 ```
@@ -584,7 +584,7 @@ registry.
 
 ---
 
-```dockerfile
+```dockerfile,linenos,hl_lines=3
 FROM internal.registry/base/distroless-python:3.9.2
 # ...
 LABEL maintainer="Redacted <redacted-email>"
@@ -597,7 +597,7 @@ who built it, and how to get into contact with us in case of issues.
 
 ---
 
-```dockerfile
+```dockerfile,linenos,hl_lines=3-4
 FROM internal.registry/base/distroless-python:3.9.2
 # ...
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
@@ -612,7 +612,7 @@ stage had the bundle implicitly configured from the `builder` stage, upon which 
 
 ---
 
-```dockerfile
+```dockerfile,linenos,hl_lines=3-4
 FROM internal.registry/base/distroless-python:3.9.2
 # ...
 WORKDIR /app/
@@ -628,7 +628,7 @@ statement from now on, as this requires root privileges.
 
 ---
 
-```dockerfile
+```dockerfile,linenos,hl_lines=3-4
 FROM internal.registry/base/distroless-python:3.9.2
 # ...
 COPY --from=builder --chown=1000 /app/.venv/lib/python3.9/site-packages ./my-app
@@ -651,7 +651,7 @@ copied the code from the dependencies.
 
 ---
 
-```dockerfile
+```dockerfile,linenos,hl_lines=3
 FROM internal.registry/base/distroless-python:3.9.2
 # ...
 COPY --chown=1000 ./src/ ./
@@ -667,7 +667,7 @@ in our Git repository, and not something that was accidentally modified during t
 
 ---
 
-```dockerfile
+```dockerfile,linenos,hl_lines=3-4
 FROM internal.registry/base/distroless-python:3.9.2
 # ...
 ENTRYPOINT ["python3"]

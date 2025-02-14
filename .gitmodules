@@ -1,3 +1,4 @@
 [submodule "themes/terminimal"]
 	path = themes/terminimal
-	url = https://github.com/pawroman/zola-theme-terminimal.git
+	url = https://github.com/f4z3r/zola-theme-terminimal.git
+	branch = fix/gruvbox
