@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://f4z3r.github.io/</loc>
+    </url>
+    <url>
+        <loc>https://f4z3r.github.io/a-very-deep-dive-into-docker-builds/</loc>
+        <lastmod>2024-11-26</lastmod>
+    </url>
+    <url>
+        <loc>https://f4z3r.github.io/about/</loc>
+    </url>
+    <url>
+        <loc>https://f4z3r.github.io/archive/</loc>
+    </url>
+    <url>
+        <loc>https://f4z3r.github.io/page/1/</loc>
+    </url>
+    <url>
+        <loc>https://f4z3r.github.io/tags/</loc>
+    </url>
+    <url>
+        <loc>https://f4z3r.github.io/tags/docker/</loc>
+    </url>
+    <url>
+        <loc>https://f4z3r.github.io/tags/python/</loc>
+    </url>
+    <url>
+        <loc>https://f4z3r.github.io/tags/security/</loc>
+    </url>
+    <url>
+        <loc>https://f4z3r.github.io/tags/sre/</loc>
+    </url>
+</urlset>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title></title>
+      <link>https://f4z3r.github.io</link>
+      <description></description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="https://f4z3r.github.io/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Tue, 26 Nov 2024 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>A Very Deep Dive Into Docker Builds</title>
+          <pubDate>Tue, 26 Nov 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://f4z3r.github.io/a-very-deep-dive-into-docker-builds/</link>
+          <guid>https://f4z3r.github.io/a-very-deep-dive-into-docker-builds/</guid>
+          <description xml:base="https://f4z3r.github.io/a-very-deep-dive-into-docker-builds/">&lt;p&gt;Containers are everywhere. From Kubernetes for orchestrating deployments and simplifing operations
+to Dev Containers for flexible yet reproducible development environments. Yet, while they are
+ubiquitous, images are often built sub-optimally. In this post we will be looking at a full example
+of a Docker build for a Python application and what best practices to consider.&lt;&#x2F;p&gt;
+</description>
+      </item>
+    </channel>
+</rss>
