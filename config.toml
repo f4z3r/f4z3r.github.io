@@ -1,4 +1,5 @@
 base_url = "https://f4z3r.github.io"
+title = "f4z3r's blog"
 theme = "terminimal"
 compile_sass = true
 build_search_index = true
@@ -94,7 +95,7 @@ use_full_hack_font = false
 #                 or if page_title is not defined or empty, fall back to `main_title`
 #
 # Note that the main (index) page only has the main title.
-page_titles = "main_only"
+page_titles = "combined"
 
 # Optional: default image to use for OpenGraph.
 #           If the page doesnt set og_image, use this one as fallback. Usefull
