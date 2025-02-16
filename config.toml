@@ -63,6 +63,7 @@ menu_items = [
     {name = "about me", url = "$BASE_URL/about"},
 
     {name = "github", url = "https://github.com/f4z3r/", newtab = true},
+    {name = "linkedin", url = "https://www.linkedin.com/in/jakob-beckmann/", newtab = true},
 ]
 
 # Whether to show links to earlier and later (aka. higher/lower) posts

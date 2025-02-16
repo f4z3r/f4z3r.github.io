@@ -9,8 +9,14 @@
         {{ post_macros::header(page=page) }}
         {{ post_macros::content(page=page, summary=false, show_only_description=false) }}
         {{ post_macros::earlier_later(page=page) }}
+       <div class="pagination">
+         <div class="pagination__title">
+           <span class="pagination__title-h">Comment Section</span>
+           <hr />
+         </div>
+       </div>
 
-      <div class="giscus comments" style="margin-top: 3rem"></div>
+      <div class="giscus comments"></div>
       <script src="https://giscus.app/client.js"
         data-repo="f4z3r/f4z3r.github.io"
         data-repo-id="R_kgDON5I2cQ"

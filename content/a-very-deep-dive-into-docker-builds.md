@@ -7,6 +7,11 @@ tags = ["docker", "sre", "python", "security"]
 
 +++
 
+{{ banner(src="/img/diver.jpeg",
+          alt="One does not simply deploy containers to production",
+          size="width:100%;height:300px;",
+          style="margin:-25% 0") }}
+
 Containers are everywhere. From Kubernetes for orchestrating deployments and simplifing operations
 to Dev Containers for flexible yet reproducible development environments. Yet, while they are
 ubiquitous, images are often built sub-optimally. In this post we will be looking at a full example
@@ -41,8 +46,8 @@ you might care less about release build cache optimization. This example is howe
 the "extreme" to which you can push Docker, so that you can (in theory) push code to production
 fully continuously (CI/CD principles). But yeah ...
 
-{{ image(src="/img/meme.jpeg", alt="One does not simply deploy containers to production",
-         style="border-radius: 8px;") }}
+{{ image(src="/img/one-does-not-simply-deploy-containers-to-production.jpeg",
+         alt="One does not simply deploy containers to production", style="border-radius: 8px;") }}
 
 # Why
 
