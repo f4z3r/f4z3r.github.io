@@ -8,7 +8,7 @@ tags = ["docker", "sre", "python", "security"]
 +++
 
 {{ banner(src="/img/diver.jpeg",
-          alt="One does not simply deploy containers to production",
+          alt="A man diving deep into the depths of the sea.",
           size="width:100%;height:300px;",
           style="margin:-25% 0") }}
 
