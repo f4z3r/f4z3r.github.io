@@ -7,7 +7,7 @@ tags = ["platform-engineering", "sre", "gitops"]
 
 +++
 
-{{ banner(src="/img/old-wooden-trading-ship.jpeg",
+{{ banner(src="/img/gitops-intro/old-wooden-trading-ship.jpeg",
           alt="An old wooden trading ship navigating the wide ocean",
           size="width:100%;height:300px;",
           style="margin:-30% 0") }}
@@ -153,7 +153,7 @@ resources can be made via Git, conforming to our GitOps approach. This "higher l
 is only there to deploy the component `Application`s thus the name "app-of-apps". Visually, you thus
 have the following structure:
 
-{{ image(src="/img/app-of-apps.excalidraw.svg",
+{{ image(src="/img/gitops-intro/app-of-apps.excalidraw.svg",
          alt="Visual representation of app-of-apps pattern", style="border-radius: 8px;") }}
 
 It should be noted that this also massively helps when customizing platforms. Typically, components
@@ -213,7 +213,7 @@ issues mentioned above. On top of that, it allows to version the "template" and 
 rollouts of a versioned infrastructure layer. You can find an example repository of such a structure
 designed with FluxCD here: [FluxCD Monorepo Demo](https://github.com/f4z3r/flux-demo).
 
-{{ image(src="/img/app-of-apps-monorepo.excalidraw.svg",
+{{ image(src="/img/gitops-intro/app-of-apps-monorepo.excalidraw.svg",
          alt="Visual representation of app-of-apps pattern", style="border-radius: 8px;") }}
 
 # Gitops Bridge

@@ -7,7 +7,7 @@ tags = ["docker", "sre", "python", "security"]
 
 +++
 
-{{ banner(src="/img/diver.jpeg",
+{{ banner(src="/img/docker-builds/diver.jpeg",
           alt="A man diving deep into the depths of the sea.",
           size="width:100%;height:300px;",
           style="margin:-25% 0") }}
@@ -46,7 +46,7 @@ you might care less about release build cache optimization. This example is howe
 the "extreme" to which you can push Docker, so that you can (in theory) push code to production
 fully continuously (CI/CD principles). But yeah ...
 
-{{ image(src="/img/one-does-not-simply-deploy-containers-to-production.jpeg",
+{{ image(src="/img/docker-builds/one-does-not-simply-deploy-containers-to-production.jpeg",
          alt="One does not simply deploy containers to production", style="border-radius: 8px;") }}
 
 # Why
