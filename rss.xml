@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>f4z3r&#x27;s blog</title>
+      <link>https://f4z3r.github.io</link>
+      <description></description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="https://f4z3r.github.io/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Sat, 19 Apr 2025 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>The Tortoise and the Hare: do AI Agents Really Help for Software Development?</title>
+          <pubDate>Sat, 19 Apr 2025 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://f4z3r.github.io/the-tortoise-and-the-hare-do-ai-agents-really-help/</link>
+          <guid>https://f4z3r.github.io/the-tortoise-and-the-hare-do-ai-agents-really-help/</guid>
+          <description xml:base="https://f4z3r.github.io/the-tortoise-and-the-hare-do-ai-agents-really-help/">
+  
+  
+    
+    
+  
+  &lt;div style=&quot;overflow:hidden;width:100%;height:300px;&quot;&gt;
+    &lt;img src=&quot;https:&#x2F;&#x2F;f4z3r.github.io&#x2F;img&#x2F;ai-agents&#x2F;robot-ai.jpeg&quot; alt=&quot;A robot working on a computer writing code.&quot; class=&quot;center&quot; style=&quot;margin:-20% 0&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot;&#x2F;&gt;
+  &lt;&#x2F;div&gt;
+
+
+&lt;!--
+vim: ft=liquid
+--&gt;
+&lt;p&gt;Making my development workflow as fast as possible is a big passion of mine. From customizing my
+development setup to get the last inkling of efficiency out of it, to thinking how to manage notes
+and knowledge resources to access them as quickly as possible. With the sudden ubiquity of AI in
+development tools, I came to wonder how AI could help me write code faster. Being quite the skeptic
+when it comes to AI actually generating code for me (using tools such as Cursor or GitHub Copilot),
+I came to investigate AI agents which specialise in code reviews. In this blog post I will share my
+experience using such an agent on a real world case. I will explore where such agents shine and
+where they are severely lacking.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>A Comprehensive Guide to Managing Large Scale Infrastructure with GitOps</title>
+          <pubDate>Sun, 30 Mar 2025 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://f4z3r.github.io/a-comprehensive-guide-to-managing-large-scale-infrastructure-with-gitops/</link>
+          <guid>https://f4z3r.github.io/a-comprehensive-guide-to-managing-large-scale-infrastructure-with-gitops/</guid>
+          <description xml:base="https://f4z3r.github.io/a-comprehensive-guide-to-managing-large-scale-infrastructure-with-gitops/">
+  
+  
+    
+    
+  
+  &lt;div style=&quot;overflow:hidden;width:100%;height:300px;&quot;&gt;
+    &lt;img src=&quot;https:&#x2F;&#x2F;f4z3r.github.io&#x2F;img&#x2F;gitops-intro&#x2F;old-wooden-trading-ship.jpeg&quot; alt=&quot;An old wooden trading ship navigating the wide ocean&quot; class=&quot;center&quot; style=&quot;margin:-30% 0&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot;&#x2F;&gt;
+  &lt;&#x2F;div&gt;
+
+
+&lt;!--
+vim: ft=liquid
+--&gt;
+&lt;p&gt;GitOps is getting adopted more and more. However, there still seems to be some confusion as to what
+GitOps is, how it differs from regular CI&#x2F;CD pipelines, and how to best adopt it. In this post we
+will quickly cover what GitOps is, and the three main lessons learned from using GitOps to manage
+infrastructure at scale both on premise and in the cloud.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>A Very Deep Dive Into Docker Builds</title>
+          <pubDate>Tue, 26 Nov 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://f4z3r.github.io/a-very-deep-dive-into-docker-builds/</link>
+          <guid>https://f4z3r.github.io/a-very-deep-dive-into-docker-builds/</guid>
+          <description xml:base="https://f4z3r.github.io/a-very-deep-dive-into-docker-builds/">
+  
+  
+    
+    
+  
+  &lt;div style=&quot;overflow:hidden;width:100%;height:300px;&quot;&gt;
+    &lt;img src=&quot;https:&#x2F;&#x2F;f4z3r.github.io&#x2F;img&#x2F;docker-builds&#x2F;diver.jpeg&quot; alt=&quot;A man diving deep into the depths of the sea.&quot; class=&quot;center&quot; style=&quot;margin:-25% 0&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot;&#x2F;&gt;
+  &lt;&#x2F;div&gt;
+
+
+&lt;!--
+vim: ft=liquid
+--&gt;
+&lt;p&gt;Containers are everywhere. From Kubernetes for orchestrating deployments and simplifing operations
+to Dev Containers for flexible yet reproducible development environments. Yet, while they are
+ubiquitous, images are often built sub-optimally. In this post we will be looking at a full example
+of a Docker build for a Python application and what best practices to consider.&lt;&#x2F;p&gt;</description>
+      </item>
+    </channel>
+</rss>
