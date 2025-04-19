@@ -1,6 +1,6 @@
 +++
 title = "The Tortoise and the Hare: do AI Agents Really Help for Software Development?"
-date = 2025-04-13
+date = 2025-04-19
 
 [taxonomies]
 tags = ["ai", "devops", "devex"]
@@ -15,23 +15,23 @@ tags = ["ai", "devops", "devex"]
 Making my development workflow as fast as possible is a big passion of mine. From customizing my
 development setup to get the last inkling of efficiency out of it, to thinking how to manage notes
 and knowledge resources to access them as quickly as possible. With the sudden ubiquity of AI in
-development tools, I came to wonder how AI could help me write code faster. Being a quite the
-skeptic when it comes to AI actually generating code for me (using tools such as Cursor or GitHub
-Copilot), I came to investigate AI agents which specialise in code reviews. In this blog post I will
-share my experience using such an agent on a real world case, where such agents shine, and where
-they are severely lacking.
+development tools, I came to wonder how AI could help me write code faster. Being quite the skeptic
+when it comes to AI actually generating code for me (using tools such as Cursor or GitHub Copilot),
+I came to investigate AI agents which specialise in code reviews. In this blog post I will share my
+experience using such an agent on a real world case. I will explore where such agents shine and
+where they are severely lacking.
 
 <!-- more -->
 
 # I am an AI Skeptic
 
 Generally I am not fond of using AI to develop software. My background is mostly in systems
-software, where correctness of the software can be critical. This means that using tooling what is
-non-deterministic and might or might not produce adequate results gives me cold shivers. But even if
-AI were to produce amazing results, a developer relying on it will quickly lose understanding of the
-code being produced. This results in skill atrophy and large risks if the AI reaches the limits of
-its capabilities. In other words, I am not keen on having any AI generating code for me on a large
-scale for anything more than a proof of concept or low risk project.
+software, where correctness of the software can be critical. This means that using tooling that is
+non-deterministic and might not produce adequate results makes me uneasy. Furthermore, even if AI
+were to produce amazing results, a developer relying on it could quickly lose understanding of the
+code. This results in skill atrophy and large risks if the AI reaches the limits of its
+capabilities. In other words, I am not keen on having any AI generating code for me on a large scale
+for anything more than a proof of concept or low risk project.
 
 Nonetheless, one would be foolish to ignore AI's capabilities when it comes to developer tooling.
 
@@ -57,12 +57,13 @@ problem solving skills atrophy, but I can iterate on reviews much faster.
 
 # CodeRabbitAI
 
-In order to gain first experiences with such an AI agent, I chose to try out CodeRabbitAI. This was
-not a thoroughly researched decision. The main reason I chose CodeRabbitAI is that I could try it
-out for free during 14 days and that it integrates well with GitHub. I am aware that performance
-between AI models varies greatly. However, CodeRabbitAI uses Claude under the hood, a model
-typically known to perform surprising well on programming tasks. I thus expect it to not perform
-significantly worse than any other state of the art model out there.
+In order to gain first experiences with such an AI agent, I chose to try out
+[CodeRabbitAI](https://www.coderabbit.ai/). This was not a thoroughly researched decision. The main
+reason I chose CodeRabbitAI is that I could try it out for free during 14 days and that it
+integrates well with GitHub. I am aware that performance between AI models varies greatly. However,
+CodeRabbitAI uses Claude under the hood, a model typically known to perform surprising well on
+programming tasks. I thus expect it to not perform significantly worse than any other state of the
+art model out there.
 
 # Starting Small
 
@@ -72,8 +73,8 @@ larger, contain more complex logic, and are less standardized than these demos. 
 software I work on professionally is not publicly available, so I cannot use CodeRabbitAI on these.
 I therefore picked two (still very small) personal projects of mine:
 
-- A NeoVim plugin providing a colour scheme.
-- A command execution engine to run templated commands.
+- A [NeoVim plugin](https://github.com/f4z3r/gruvbox-material.nvim) providing a colour scheme.
+- A [command execution engine](https://github.com/f4z3r/sofa) to run templated commands.
 
 Both projects are extremely small, with under two thousand lines of code. Both projects are written
 in Lua, a quite uncommon language. I wanted to see how the AI fares against something it is
@@ -81,29 +82,37 @@ unlikely to have seen too much during its training.
 
 With that in mind, I wrote a [first pull
 request](https://github.com/f4z3r/gruvbox-material.nvim/pull/40) implementing a fix in highlight
-groups for pop-up menus in NeoVim, and adding support for two plugins. I enabled CodeRabbitAI to
-summarize the PR for me.
+groups for pop-up menus in NeoVim. I enabled CodeRabbitAI to summarize the PR for me.
 
 {{ image(src="/img/ai-agents/summary-first-pr-0.png",
          alt="Summary provided by CodeRabbitAI on my first PR", style="border-radius: 8px;") }}
 
-The summary looks good, even though it somehow marks fixes to `Pmenu` as features. This is
-especially intriguing as I use conventional commits and explicitly marked changes to `Pmenu` as
-fixes. Additionally, CodeRabbitAI offers a "walkthrough" of the changes made in the PR. In the case
-of such a simple PR, I found the walkthrough to be mostly confusing. In the case of larger PRs I can
-however see how this might be appealing.
+The summary looks good, even though it somehow marks some fixes as features. This is especially
+intriguing as I use [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) and
+explicitly marked these changes as fixes. Additionally, CodeRabbitAI offers a "walkthrough" of the
+changes made in the PR. In the case of such a simple PR, I found the walkthrough to be mostly
+confusing. In the case of larger PRs I can however see how this may be appealing.
 
-In reality, I initially opened the PR with only the fixes to `Pmenu`. I then pushed commits
+{{ figure(src="/img/ai-agents/walkthrough-first-pr.png",
+          caption="A walkthrough of the changes in the first PR",
+          caption_style="font-weight: bold; font-style: italic;",
+          style="border-radius: 8px;") }}
+
+In reality, I initially opened the PR with only the fixes the pop-up menus. I then pushed commits
 introducing the support for additional plugins later on. I would have expected CodeRabbitAI to
 complain that the new commits introduce changes unrelated to the PR, which is not seen as best
-practice. It did nothing of the sort, instead only providing nitpicks from linting tools (in this
-case `markdownlint`). On one side, it is very disappointing to see that the AI agent did nothing
-more than lint the code and generate a nice comment out of the output. On the other hand it is quite
-nice that it introduces "quality gates" such as linting without me having to write a pipeline for
-it. Moreover, producing easily digestible output from a linter is nothing to be underestimated. The
-quality of life of having this directly as a comment rather than having to go through pipeline logs
-to read the raw linter output is quite nice. Is it worth two dozen USD per month? No, definitely
-not!
+practice. It did nothing of the sort.
+
+While the summary, walkthrough, and disregard for best practices were unsatisfying, one unexpected
+benefit emerged: the integration of linting feedback directly within the pull request comments. It
+provided nitpicks from linting tools (in this case
+[`markdownlint`](https://github.com/DavidAnson/markdownlint). On one side, it is very disappointing
+to see that the AI agent did nothing more than lint the code and generate a nice comment out of the
+output. On the other hand it is quite nice that it introduces "quality gates" such as linting
+without me having to write a pipeline for it. Moreover, producing easily digestible output from a
+linter is nothing to be underestimated. The quality of life of having this directly as a comment
+rather than having to go through pipeline logs to read the raw linter output is quite nice. Is it
+worth two dozen USD per month? No, definitely not!
 
 On the upside, it did update the summary of the PR to reflect the other changes:
 
@@ -114,15 +123,15 @@ The first PR was extremely trivial. It did not introduce any code containing log
 pointing out that it should probably have been two separate PRs, CodeRabbitAI fared as I would have
 expected another developer to have reviewed the PR. With two small differences:
 
-- The CodeRabbitAI review was close to immediate (took around 30-60 seconds to run). This is amazing
+- The CodeRabbitAI review was close to **immediate** (took around 30-60 seconds to run). This is amazing
   to iterate quickly.
 - Where I would have expected a human reviewer to point our the nitpick or simply approve,
-  CodeRabbitAI is extremely verbose with explanations, walkthroughs, and so on. This in turn wastes
-  time for the author, as he/she would need to read through this. The verbosity might be nicer on
-  larger PRs, for for small concise PRs this is massive overkill and borderline annoying.
+  CodeRabbitAI is extremely **verbose** with explanations, walkthroughs, and so on. This in turn wastes
+  time for the author, as he/she would need to read through this. The verbosity could be nicer on
+  larger PRs, but for small concise PRs this is massive overkill and borderline annoying.
 
-
-But maybe CodeRabbitAI has more to offer us on more complex PRs...
+To further evaluate CodeRabbitAI's capabilities, I decided to test it on a pull request with more
+substantial changes...
 
 # A More Complex PR
 
@@ -131,14 +140,16 @@ PR](https://github.com/f4z3r/sofa/pull/3) in the command execution repository im
 affecting multiple files. These changes also update existing logic.
 
 In this second PR, CodeRabbitAI went above and beyond, and generated a walkthrough containing two
-sequence diagrams showcasing how the control flow of the code was modified! I was actually quite
+sequence diagrams showcasing the control flow of the code that was modified! I was actually quite
 impressed by this. While probably not necessary for the author of a PR, this is great even only for
-documentation purposes. Unfortunately it did not show what changed in the control flow, but only the
-final result. Moreover, the supporting text suddenly becomes more relevant when considering such
-PRs.
+documentation purposes. New team members with less experience may benefit from such visual aids to
+understand complex logic within the code. Unfortunately the diagrams didn't highlight the *specific
+modifications* introduced by the pull request.
+
+However, the supporting text suddenly becomes more relevant when considering such PRs.
 
 {{ figure(src="/img/ai-agents/sequence-diagram.png",
-          caption="Sequence diagram generated by CodeRabbitAI",
+          caption="One of the sequence diagrams generated by CodeRabbitAI",
           caption_style="font-weight: bold; font-style: italic;",
           style="border-radius: 8px;") }}
 
@@ -167,9 +178,14 @@ engineers would be capable of doing thanks to a even so tiny dose of common sens
 started adding commits with emojis in the title. This goes to show that these AIs are probably not
 trained much on professional projects.
 
+{{ figure(src="/img/ai-agents/coderabbitai-commit-emoji.png",
+          caption="CodeRabbitAI not only breaking conventional commits but introducing emojis...",
+          caption_style="font-weight: bold; font-style: italic;",
+          style="border-radius: 8px;") }}
+
 After that first disaster, with significantly less ambition, I requested it creates a PR to change a
 small typo. CodeRabbitAI informed me that it created a branch with the changes included, but that it
-was not capable of creating pull requests. This chocked me, considering it had created its first
+was not capable of creating pull requests. This shocked me, considering it had created its first
 disaster PR no 10 minutes before.
 
 {{ image(src="/img/ai-agents/correct-typo-second-pr.png",
@@ -183,8 +199,9 @@ Finally, I also tried to get it to update the wording on a commit it did to use 
 commits. Unfortunately it seems that it only has access to the GitHub API and cannot execute any
 local `git` commands. It is therefore not able to perform some relatively common operations in the
 SDLC that are not part of the GitHub API. However, I am guessing this is subject to change
-relatively soon with the emergence of technologies such as the model context protocal, which would
-enable it to control external tools such as `git`.
+relatively soon with the emergence of technologies such as the [model context
+protocol](https://modelcontextprotocol.io/introduction), which would enable it to control external
+tools such as `git`.
 
 All in all, I would say CodeRabbitAI did as I would have expected after the first PR. It corrected
 nitpicks and allowed me to perform some simple actions. Did it deliver a review of the same quality
@@ -192,7 +209,9 @@ like a senior engineer familiar with the project would have? No. In fact, in ord
 intentionally implemented a feature that was already present in the repository, while making a
 couple design decisions that go against most of what the rest of the repository does. CodeRabbitAI
 neither detected that the logic I was introducing was already present in the codebase, nor did it
-complain about the sub-optimal design decisions.
+complain about the sub-optimal design decisions. This goes to show that such agents are still not
+capable replacing humans with nuanced understanding of the project's history and architectural
+principles, potentially leading to the introduction of redundant or suboptimal solutions.
 
 # Dashboards!
 
@@ -239,5 +258,5 @@ is being shifted to developers. With DevSecOps, developers have to understand an
 output of all kinds of tools. Presenting this output in a more understandable format, potentially
 enriched with explanations, can have a significant impact.
 
-Therefore, as a final word, I would actually encourage people to use such agents, albeit with
-caution.
+Therefore, as a final word, I would actually encourage people to explore such agents to augment
+their workflow **safely**, albeit with caution and a clear understanding of their **limitations**.
