@@ -120,6 +120,112 @@ The actual module that you want to deploy.
 Combines all the above into a deployable unit (think helm chart?)
 
 
+Over the past few months I have invested some time to contribute to an open source project I find
+fascinating: [wasmCloud](https://wasmcloud.com/). As a platform engineer and architect, I am very
+familiar with how software platforms are typically built in practice. However, with the ubiquity of
+Kubernetes, you run the risk to being stuck in the "doing it the Kubernetes way" line of thinking.
+But then again, are there any better ways? This is where wasmCloud caught my attention. A modern
+platform building on proven concepts from Kubernetes, but with some significant differences. In this
+article I want to introduce wasmCloud, how it compares to Kubernetes, what its internal architecture
+looks like, and what ideas are, in my humble opinion, a step up from "the Kubernetes way of things".
+
+<!-- more -->
+
+Before getting started, I need to get some things out of the way. This article will make quite a few
+comparisons to Kubernetes and bytecode interpreters like the JVM. If you are unfamiliar with these
+technologies, it might make sense to have a short look at what these are. Considering you clicked on
+this article, I am however guessing that you are familiar with them and have some experience in
+platform engineering practices, either as a poweruser of a platform, or as a designer and developer
+of one.
+
+Moreover, I want to thank the company I work for, [ipt](https://ipt.ch/en/), for allowing me to
+invest time to learn about new technologies such as wasmCloud. Not only is contributing to open
+source a great way to pay back a community powering the modern world, it is also a huge passion of
+mine. Being able to help the development of such projects during paid worktime enables me to learn
+so much on emerging technologies, and maybe help build the revolutionary tools of tomorrow.
+
+So... wasmCloud!? I have been interested in WebAssembly ever since it promised to replace
+JavaScript, a language I personally consider as extremely poorly designed (someone once told me it
+was designed in three days, so no wonder there). While WebAssembly is very far from doing anything
+close to replacing JavaScript in the browser, it has evolved into something else: a potential
+replacement for containers.
+
+# WebAssembly as a Platform Foundation
+
+Modern platforms nearly all build on top of containers as their foundational element to run
+executable code. This is a logical evolution from Docker meteoric growth, and the ecosystem that
+grew around its open standards (such as the [OCI - Open Container
+Initiative](https://opencontainers.org/)). While containers provide a huge step in terms of ease of
+use, standardization, and security compared to shipping raw artefacts to virtual machines, as was
+the case before them, they do have some shortcomings.
+
+First and foremost, containers are not composable. In part due to their flexibility, they do not
+offer standard ways of expressing how the world should interact with them at runtime, or what they
+rely on to perform their functionality. This means that containers are typically deployed as REST
+based microservices, where containers communicate with one another over a network using APIs agreed
+upon outside of the container standards. This lack of standardization makes building reusable
+components more challenging than it has to be. Moreover, each container essentially needs a
+server, authentication, authorization, and more to run. This results in quite some waste in the
+compute density of the platform, with lots of compute wasted on boilerplate.
+
+Moreover, while containers are a huge step in the right direction in terms of security, they are not
+quite as secure as most people are led to believe. Containers are "allow by default" constructs,
+which take quite some work to properly harden.
+
+Finally, due to how containers are typically built, their startup times are not that great. It is
+not abnormal to see container start times in the dozens of seconds. This does not bother people very
+much because containers are mostly used to run long running processes (since we need these REST APIs
+everywhere). However, a large part of containers are mostly idle, waiting for some API request to
+come in. If one considers that workloads could be called (and thus the process started) only when
+needed, startup times over 100ms is considered slow.
+
+This is where WebAssembly comes it. WebAssembly addresses these challenges. Composability is
+addressed by the component model.
+
+## WebAssembly: The Component Model
+
+The [component model](https://component-model.bytecodealliance.org/) is a way that WebAssembly
+modules can be built with metadata attached to them which describe their imports and exports based
+on a rich time system. Moreover, they are composable such that a new component can be built from
+existing components as long as the imports of one are satisfied by the exports of another. This
+means that components can interact with one another via direct method/function calls, whose
+specification is fully standardized. This interface specification is declered in a language known as
+the WebAssembly Interface Types (WIT) language. An example of a WIT specification of a component
+relying on a clock system can be seen below:
+
+```wit
+package wasi-example:clocks;
+
+world mycomponent {
+    import wall-clock;
+}
+
+interface wall-clock {
+    record datetime {
+        seconds: u64,
+        nanoseconds: u32,
+    }
+
+    now: func() -> datetime;
+
+    resolution: func() -> datetime;
+}
+```
+
+This declaration says that the component relies on an interface `wall-clock` (it `import`s the
+interface) which defines two functions: `now` and `resolution`. Both take no arguments and return a
+`datetime` object consisting of a `seconds` and `nanoseconds` field. This component could then be
+composed with any other component which exports this `wall-clock` interface.
+
+If this were a container which would rely on accessing some API, we would need to read a
+non-standardized documentation of the container image, and then read up on other containers to
+ensure they provide APIs that match the ones called by the first container.
+
+The WebAssembly component model can essentially be seen as a form of contract-based programming to
+formalize interfaces between WebAssembly core modules.
+
+The components One can imagine the component model as an evolution to how JARs
+can be called in JVM based programs, regardless of the language that was used to generate the JAR.
 
 # Goal
 
