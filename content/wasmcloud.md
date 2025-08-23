@@ -12,113 +12,6 @@ tags = ["wasm", "cloud", "rust", "kubernetes"]
           size="width:100%;height:300px;",
           style="margin:-7% 0") }}
 
-WebAssembly was initially designed to help run high performance applications in the web browser.
-While some thought this might lead to the replacement of JavaScript in the frontend world, this has
-not yet proven to be the case. Instead, WebAssembly has been used to facilitate the development of
-plugins and composable software, especially in environments where re-usability and performance play
-a key role. And thus WebAssembly has also found its place in the world of application runtimes. In
-this blog post, I will dive deep into wasmCloud. wasmCloud is to WebAssembly what Kubernetes is to
-Docker: a software orchestrator that enables the deployment, scaling, and lifecycle of complex
-WebAssembly payloads.
-
-<!-- more -->
-
-A few years ago, I stubbled into WebAssembly by pure chance. Rust was one of the first languages to
-support WebAssembly as a compilation backend, and I am a huge Rust fanboy. That is how I first heard
-of this new technology. As it was mostly marketed as a frontend technology and alternative to
-JavaScript and I am not a frontend developer, I did not further investigate this too much. However,
-in the least year, WebAssembly has popped up here and there in completely different contexts.
-Whether it be to support implementing plugins in different languages, or as a runtime with little to
-no cold-start delays for serverless computing. I became intrigued...
-
-Over the last few months I decided to dive deep and try to contribute to the open source wasmCloud
-CNCF incubating project. The project is written in Rust, a language I absolutely love and would like
-to work more with, and touches on aspects I am both very familiar with (orchestration) and utterly
-unfamiliar with (WebAssembly). In this post I want to share an introduction to wasmCloud, from the
-basics up to a fully running application. This blog post will start with the basics, and does not
-assume that you are familiar with WebAssembly or other technology other than Rust for the examples.
-Familiarity with Kubernetes will definitely help though.
-
-Addressing:
-- proud of: contributed and got stuff to work
-- pained: understanding the whole stuff is difficult
-- passionate: wasm
-
-# Key Questions
-
-- Who do you want to read this? Developers and architects that want to learn more
-- What do they know about what you're planning to write? Very little, some rust, and some of what
-  webassembly is
-- Why do they care about what you're planning to write? because it is a cool piece of tech that is
-  quite novel and has a lot of potential
-- Why should they care about your perspective? I have made quite a lot of experience with it
-- What do you want them to do differently or think about differently after reading your blog post?
-  try it out
-
-# WebAssembly
-
-- compilation backend
-- supported by languages x y z
-- performance
-- sandboxing
-
-# wasmCloud Architecture
-
-see: https://wasmcloud.com/docs/concepts/
-
-## what is it and why use it vs kubernetes
-
-- components have structure imports and exports: can be linked to together much easier. Docker images/containers
-  don't have a programatically defined interface. Rely on OpenAPI specs or similar.
-- much better security model than kubernetes
-- lacking the extensible api that makes kubernetes so powerful
-
-## Hosts
-
-wasmCloud hosts are the foundation of the compute platform that is provided. They are the equivalent
-of Kubernetes nodes and provide a WebAssembly runtime for components to run on. Just as with
-Kubernetes nodes, application developers will rarely need to worry about the hosts other than for
-deployment affinities and the like.
-
-## Lattice
-
-The lattice is a service mesh that interconnects the wasmCloud hosts and thus also the applications
-and providers that will run on these hosts. It can be seen as the networking layer, or rather the
-CNI implementation of Kubernetes. The wasmCloud lattice is implemented using NATS. Under the hood
-components call each other using wRPC and any component that exposes a function essentially becomes
-subscriber to a queue on NATS for this function. This is what enables high availability, as
-instances of the same component listen to the invocation.
-
-## wadm
-
-The wasmCloud Application Deployment Manager (wadm) manages the declarative application deployments.
-It leverages the Open Application Model (https://oam.dev/). It can be seen as a hybrid between the
-deployment controller on Kubernetes and the API server.
-
-## Capability
-
-An abstract interface, such as KV store.
-
-## Providers
-
-Implementation of the capability above.
-
-Plugins on hosts that are hot-swappable. They should represent any capability that is not directly
-business logic. External that run external to the hosts somewhere on the lattice. And internal ones
-that are backed into the hosts themselved, such as logging or randomness.
-
-## Interfaces
-
-WIT interfaces to declare on what interfaces you rely and which you provide.
-
-## Components
-
-The actual module that you want to deploy.
-
-## Applications
-
-Combines all the above into a deployable unit (think helm chart?)
-
 
 Over the past few months I have invested some time to contribute to an open source project I find
 fascinating: [wasmCloud](https://wasmcloud.com/). As a platform engineer and architect, I am very
@@ -147,8 +40,8 @@ so much on emerging technologies, and maybe help build the revolutionary tools o
 So... wasmCloud!? I have been interested in WebAssembly ever since it promised to replace
 JavaScript, a language I personally consider as extremely poorly designed (someone once told me it
 was designed in three days, so no wonder there). While WebAssembly is very far from doing anything
-close to replacing JavaScript in the browser, it has evolved into something else: a potential
-replacement for containers.
+close to replacing JavaScript in the browser, it has evolved into something else: an application
+runtime and a potential replacement for containers.
 
 # WebAssembly as a Platform Foundation
 
@@ -224,128 +117,160 @@ ensure they provide APIs that match the ones called by the first container.
 The WebAssembly component model can essentially be seen as a form of contract-based programming to
 formalize interfaces between WebAssembly core modules.
 
-The components One can imagine the component model as an evolution to how JARs
-can be called in JVM based programs, regardless of the language that was used to generate the JAR.
+## WebAssembly: Secure by Default
 
-# Goal
+Whereas containers provide some form of security by namespacing processes and filesystems,
+WebAssembly actually sandboxes modules such that they cannot affect one another, or the host they
+run on. By default a WebAssembly module cannot perform any privileged action but needs to be granted
+explicit permission. I will not dive deeper into the details of this or I might loose myself in a
+rant on how software security in the modern day and age is abysmal.
 
-> based on repo: https://github.com/f4z3r/wasmcloud-tutorial
+## WebAssembly: Performance
 
-devbox shell
+WebAssembly's main goal is performance. This means that WebAssembly modules run fast, but also that
+loading modules and starting them is much faster than containers. This has proven to be very useful
+already, for instance in use cases such as serverless computing, where hyperscalers heavily rely on
+WebAssembly as a runtime to reduce cold start times, and reduce the delay in function calls.
 
-build using https://docs.potterdb.com/apis/rest in backend
+Considering the idea to avoid having long running servers providing REST APIs and move to raw
+function calls on short running modules, having extremely short start times is critical.
 
-## difference to kubernetes
+Alright, so we can see that WebAssembly can be a great choice for the foundation runtime of a
+platform. So where are platforms leveraging this? Well, actually, quite some "platforms" leverage
+this idea already. For instance, [SpinKube](https://www.spinkube.dev/) does exactly this, enabling
+to run WebAssembly functions on Kubernetes. However, you still interact with these functions via a
+REST call. Another example is [Kubewarden](https://www.kubewarden.io/), leveraging WebAssembly
+modules to evaluate policies. While some might argue that this is not a platform, Kubewarden
+provides a runtime for arbitrary programs, including their scheduling and deployment. Sounds like a
+platform to me.
 
+Finally: wasmCloud! wasmCloud is probably what people would consider the closest to a full blown
+platform to run WebAssembly modules. In other words, what Kubernetes is to containers, wasmCloud is
+to WebAssembly components. It provides a way to deploy, schedule, link, and lifecycle WebAssembly
+components on a distributed platform.
 
-# Create Kubernetes Cluster
+# wasmCloud Architecture
 
-We will deploy wasmCloud on Kubernetes
+Let us look at the wasmCloud architecture a little.
 
-```bash
-kind create cluster -n wasmcloud --config ./assets/kind-config.yaml
-# and deploy an ingress
-kubectl apply --filename https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/kind/deploy.yaml
-```
+> This section will contain quite a few comparisons to Kubernetes concepts.
 
-# install the operators
+Generally, the wasmCloud architecture can is quite similar to the Kubernetes architecture, with the
+difference being that wasmCloud does not provide as much flexibility in swaping out components as
+Kubernetes does. This makes sense as it is a more nascent technology and is currently more
+opinionated.
 
-```bash
-# install NATS, wadm, and the operator
-helm upgrade --install \
-  wasmcloud-platform \
-  --values https://raw.githubusercontent.com/wasmCloud/wasmcloud/main/charts/wasmcloud-platform/values.yaml \
-  oci://ghcr.io/wasmcloud/charts/wasmcloud-platform:0.1.2 \
-  --dependency-update
+As a reference, here is the diagram wasmCloud uses to provide an overview of the platform:
 
-# update to get host, cnnot be done in one because of missing CRDs
-helm upgrade --install \
-  wasmcloud-platform \
-  --values https://raw.githubusercontent.com/wasmCloud/wasmcloud/main/charts/wasmcloud-platform/values.yaml \
-  oci://ghcr.io/wasmcloud/charts/wasmcloud-platform:0.1.2 \
-  --dependency-update \
-  --set "hostConfig.enabled=true"
-```
-
-At this point you should have the following components running:
-- NATS: a pub-sub STS taking care of communication within the wasmCloud cluster.
-- wadm: the "management API" of wasmCloud managing applications and deployments (wasm Appliation Deployment Manager)
-- wasmcloud-operator: the operator allowing to configure wadm using Kubernetes CRDs.
-- a wasm host: a single host that will run your applications (similar to a kubernetes worker node).
-
-# configure wash
-
-Setup the required port forwards for the CLI to work:
-
-```bash
-kubectl port-forward service/nats 4222:4222 4223:4223
-```
-
-Run the UI using `wash ui`
-
-## deploy an application
-
-You can find an application declaration under `assets/`.
-```sh
-kubectl apply -f ./assets/hello-world.yaml
-```
-
-Then you can check that the application is running:
-```sh
-kubectl get application
-```
-
-This should return that the application is deployed after a short while.
-
-Port-forward to the host to access the component:
-```sh
-kubectl port-forward \
-    "pods/$(kubectl get pods -l 'app.kubernetes.io/instance=wasmcloud-host' -o json | jq -r '.items[0].metadata.name')" \
-    8000
-```
-And access the application under [http://localhost:8000](http://localhost:8000).
-
-> **NOTE:** you cannot create the port-forward in k9s.
+{{ figure(src="/img/wasmcloud/platform-overview.png",
+          caption="An overview of the wasmCloud platform",
+          caption_style="font-weight: bold; font-style: italic;",
+          style="border-radius: 8px;") }}
 
 
-## accessing application via ingress
+## Hosts
 
-Deploy the ingress routing to the service generated by the wasmCloud operator:
-```sh
-kubectl apply -f ./assets/hello-world-ingress.yaml
-```
+wasmCloud hosts are the foundation of the compute platform that is provided. They are the equivalent
+of Kubernetes nodes and provide a WebAssembly runtime for components to run on. Just as with
+Kubernetes nodes, application developers will rarely need to worry about the hosts other than for
+deployment affinities and the like.
 
-Once this is synced, you can access `http://example.com:8080/hello` to get a response (assuming you have your hosts
-file setup properly).
+In practice, hosts can be anything from a virtual machine, an IoT device, or a pod running on
+Kubernetes.
 
+## Lattice
 
-## using wash cli
+The wasmCloud lattice is its networking layer. This can seem a bit strange when considering that
+this a NATS instance.
 
-You can use wash to access the UI as shown above, or using commands such as `wash get inventory` to get information
-on the hosts and what is running on them.
+> For those unfamiliar with NATS: it is an event streaming component similar to Kafka, but provides
+> additional features such as a key values store, an object store, and publish-subscribe
+> capabilities.
 
+Having a NATS instance as the "networking layer" confused me quite a lot at first. However, one has
+to remember that thanks to the component model, we no longer require HTTP/TCP network calls for our
+components to interact with one another. Thus we don't necessarily need an IP to address a component
+we want to reach. Of course NATS itself will require a physical network to run on in order to
+distribute events to its different instances, but wasmCloud then only needs to use NATS.
 
-# notes
+Essentially, every component exposing a function becomes a subscriber to a queue for this function
+on NATS. Other components can then call this function via wRPC (gRPC for WebAssembly) by publishing
+a call to the queue. However, as a user of wasmCloud, you do not need to worry about this. How
+function calls are preformed under the hood is abstracted away from the user.
 
-- uses OAM specification to define applications: [https://oam.dev/](https://oam.dev/)
-- Very easy installation via Nix.
-- Language support for Go, Typescript and Rust.
+## Capabilities
 
+This is where Kubernetes and wasmCloud start differing in their philosophy. Thanks to the
+standardized way interfaces can be declared in the component model, one can describe an abstract
+interface which provides some functionality, without providing an implementation. This is what
+capabilities are. They are abstract interfaces that describe some useful functionality, such as
+reading and writing to a key value store, or retrieving some sensitive information from a secured
+environment. These capabililites are published on wasmCloud for applications to use.
 
-# building app
+An application developer can then write a component that makes use of that interface if he/she needs
+that functionality. He/she does not need to worry about how this capability is implemented. He
+relies on the "contract" provided by the capability.
 
-Test with
+In my opinion, while this is quite the brainfuck initially, this is what makes wasmCloud so
+promising. Having worked on many platforms in the past, the main challenge is always how additional
+services can be provided on top of raw platforms such as Kubernetes in a way that makes then highly
+standardized while easily consumable. In the current state of platform engineering, this quickly
+becomes a question of good product management. Unfortunately, does this correctly is surprisingly
+difficult. Capabilities provide a technical solution to this, which the only limitation that it is
+completly incompatible with existing software.
 
-```bash
-wash dev
-```
+## Providers
 
+A provider is a specific implementation of a capability. For instance, taking the example of the
+capability enabling the reading and writing to a key value store, a provider might implement this by
+having a ValKey instance backing the capability. Another provider might implement the very same
+capability using NATS, Redis, or even an in-memory key-value store.
 
-Added persistency etc
+Abstracting the provider away from the consume via a capability enables the platform to swap
+providers based on needs. Of course performing such a swap might be quite complex, for instance
+involving a data migration from NATS to ValKey. However, the beauty is that the applications do not
+require any changes as would be the case in traditional platforms.
 
-# links
+It should be noted that the provider might run completly outside of wasmCloud itself. However,
+wasmCloud also provides internal provider that are backed into the hosts themselves, providing
+functionality such as logging or randomness.
 
-- Documentation of concepts: [https://wasmcloud.com/docs/concepts/](https://wasmcloud.com/docs/concepts/)
-- Documentation for deploying wasmcloud on kubernetes: [https://wasmcloud.com/docs/deployment/k8s/](https://wasmcloud.com/docs/deployment/k8s/)
-- Documentation for running wasmcloud on kubernetes: [https://wasmcloud.com/docs/kubernetes/](https://wasmcloud.com/docs/kubernetes/)
-- Documentation to build components: [https://wasmcloud.com/docs/developer/languages/rust/components/](https://wasmcloud.com/docs/developer/languages/rust/components/)
+## Components
+
+Components refer to the WebAssembly payload that contain your business logic. In the traditional
+sense, this is your application. However, in wasmCloud lingo, the application is the component
+including all information about what capabilities it requires, etc.
+
+## wadm
+
+The wasmCloud Application Deployment Manager (wadm) manages the declarative application deployments.
+It leverages the Open Application Model (https://oam.dev/). It can be seen as a hybrid between the
+deployment controller on Kubernetes and the API server. The idea here is that wasmCloud applications
+should be defined declaratively similar to how Kubernetes works. wadm is the component which
+interprets these declarations and then orchestrates the deployment of components and providers as
+needed.
+
+## Drawbacks
+
+- learning curve
+- some stuff does not yet truly work
+- number of providers is incredibly small
+- needs very strong platform team, as even more stuff is shifted to the platform (providers etc).
+But a good shift -> shift down
+
+---
+
+Addressing:
+- proud of: contributed and got stuff to work
+- pained: understanding the whole stuff is difficult
+- passionate: wasm
+
+# Key Questions
+
+- Who do you want to read this? Developers and architects that want to learn more
+- What do they know about what you're planning to write? Kubernetes, JARs, WebAssembly.
+- Why do they care about what you're planning to write? because it is a cool piece of tech that is
+  quite novel and has a lot of potential
+- Why should they care about your perspective? I have made quite a lot of experience with it
+- What do you want them to do differently or think about differently after reading your blog post?
+  try it out
