@@ -288,33 +288,18 @@ deployment controller from Kubernetes for wasmCloud Applications. It essentially
 deployment of components, capabilities, their links, etc. on the platform. This construct will also
 be dropped with wasmCloud version 2.
 
-# Security
-
-As I considered the architecture of wasmCloud, especially the component-to-provider links, a
-critical question came to mind: How are calls between components and providers authorized? As
-someone doing a lot of security work, I like to be able to have tight controls over such operations.
-Of course, components need to be linked to capabilities explicitly in order to be able to use them.
-However, since capabilities tend to implement rather broad interfaces, it begs the question how one
-controls what operations are allowed to be performed against a capability. For instance, let us
-consider the PostgreSQL capability. This essentially defines a single function `query` that enables
-a component to perform a query against some PostgreSQL database backed by the provider. However, I
-might have some components to which I only want to grant read access to specific data on the
-database, while other components need full write access.
-
-The short answer is that links between components and to providers are held within the same
-application. Such an application is a construct managed by a single team, thus not necessarily
-relying on tight controls. Connections between applications, and thus between teams, still run over
-interfaces such as HTTP, and can thus be controlled in standard ways (for instance via API Gateways
-and similar controls). On top of that, any components being retrieved from outside an organisation
-tend to be digitally signed, and are then validated by the runtime before executing them.
-
 # Verdict
 
-wasmCloud is a relatively new platform and provides interesting new approaches to how
-inter-component communication can be modeled. On top of that, it does it building on open standards
-such as WebAssembly and the component model, such that the business logic of your application
-remains portable. While these new concepts are very promising, wasmCloud still suffers from a couple
-drawbacks:
+With a decent understanding of the architecture we can now get an idea of the uses of wasmCloud in
+the real world. While I have not yet run anything productive on wasmCloud, I have played with the
+platform a lot over the past few months, and have come to really appreciate some of its innovative
+ideas.
+
+Thus, to summarise my experience: wasmCloud is a relatively new platform and provides interesting
+new approaches to how inter-component communication can be modeled. On top of that, it does it while
+building on open standards such as WebAssembly and the component model, such that the business logic
+of your application remains portable. While these new concepts are very promising, wasmCloud still
+suffers from a couple drawbacks:
 
 - For people unfamiliar with WebAssembly, it has a quite steep learning curve. This is highly
   accentuated for people unfamiliar with existing platforms such as Kubernetes.
@@ -325,3 +310,7 @@ drawbacks:
   team to operate this with low developer friction. This can be an issue as finding highly skilled
   platform engineers is quite difficult at the moment. However, the team behind wasmCloud is focused
   on making application delivery as frictionless as possible.
+- Finally, I am not sure I currently understand the security model wasmCloud uses to authenticate
+  and authorize calls between components. While I am not sure this is a drawback, it does not yet
+  feel as intuitive as Kubernetes simple yet relatively powerful RBAC. I will have to dive deeper
+  into this to have a final opinion on it though (another blog post might follow on this).
