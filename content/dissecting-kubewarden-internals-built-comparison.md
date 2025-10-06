@@ -35,12 +35,12 @@ endpoints, but to not allow control based on payload content. This means that th
 mostly restricted to CRUD operations on Kubernetes primitives (e.g. `Deployments`, `Ingresses`, or
 custom resources). Unfortunately, this is often not enough.
 
-For instance, it is quite common to allow users to perform actions on some primitives under
-specific conditions. An example would be that creating `Deployments`s is only allowed as long as its
-name follows some convention and the pods its creates are not privileged and set proper resource
-requests/limits. The naming convention cannot be enforced by standard RBAC controls as these have
-no possibility to represent more complex logic. Controlling the configuration of the pods created by
-a `Deployment` is a validation of the payload pushed to the API, and is thus not supported either.
+For instance, it is quite common to allow users to perform actions on some primitives under specific
+conditions. An example would be that creating `Deployments`s is only allowed as long as its name
+follows some convention and the pods its creates are not privileged and set proper resource
+requests/limits. The naming convention cannot be enforced by standard RBAC controls as these have no
+possibility to represent more complex logic. Controlling the configuration of the pods created by a
+`Deployment` is a validation of the payload pushed to the API, and is thus not supported either.
 
 > **Note:** Security contexts and resources on pods can be controlled via methods such as Security
 > Context Constraints or Pod Security Policies and ResourceQuotas. However, these do not reject the
@@ -111,18 +111,19 @@ spec:
       environment: test
 ```
 
-In this example, we are using a WASM module which evaluates a [Common Expression Language
-(CEL)](https://cel.dev/) expression to define our policy. Evaluating a CEL expression is not
-something we want to implement every time ourselves. Thankfully, Kubewarden provides this as a WASM
-module on their [ArtefactHub](https://artifacthub.io/packages/search?kind=13&sort=relevance&page=1).
-Thus we do not need to implement anything and can reuse that module. It is referenced on line 7
-above. Of course we also need to actually define the CEL expression that should be the heart of the
-policy rule. This is done on lines 18 to 25 within the `settings` block. Note how we can use object
-internals (such as replicas defined in a `Deployment`) in the validation expression. Finally, we
-need to define on what objects this policy should be evaluated. In order to do this, we provide
-`rules` (lines 13-16) that tell Kubewarden on what Kubernetes API endpoints to trigger the policy,
-and additionally provide information about which namespaces should be affected by the policy with a
-`namespaceSelector` (lines 26-28). The remaining options configure the following:
+In this example, we are using a WASM module which evaluates a
+[Common Expression Language (CEL)](https://cel.dev/) expression to define our policy. Evaluating a
+CEL expression is not something we want to implement every time ourselves. Thankfully, Kubewarden
+provides this as a WASM module on their
+[ArtefactHub](https://artifacthub.io/packages/search?kind=13&sort=relevance&page=1). Thus we do not
+need to implement anything and can reuse that module. It is referenced on line 7 above. Of course we
+also need to actually define the CEL expression that should be the heart of the policy rule. This is
+done on lines 18 to 25 within the `settings` block. Note how we can use object internals (such as
+replicas defined in a `Deployment`) in the validation expression. Finally, we need to define on what
+objects this policy should be evaluated. In order to do this, we provide `rules` (lines 13-16) that
+tell Kubewarden on what Kubernetes API endpoints to trigger the policy, and additionally provide
+information about which namespaces should be affected by the policy with a `namespaceSelector`
+(lines 26-28). The remaining options configure the following:
 
 - `backgroundAudit`: informs Kubewarden to report on this policy for objects that are already
   deployed. In this case, we validate the replicas on created or updated `Deployment` objects.

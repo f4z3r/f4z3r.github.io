@@ -38,7 +38,7 @@ Nonetheless, one would be foolish to ignore AI's capabilities when it comes to d
 # AI Support Agents
 
 Thus starts my journey investigating AI agents that can support me in the software development
-lifecycle, but whose main use is *not* to generate code. Many such agents exist, mostly focusing on
+lifecycle, but whose main use is _not_ to generate code. Many such agents exist, mostly focusing on
 reviewing code. I am quite the fan of such a use case, as the AI essentially plays the role of
 another developer I might work with. It reviews my code, provides feedback, suggestions, and
 potentially even improvements. It however does this immediately after I have opened a pull request,
@@ -77,12 +77,12 @@ I therefore picked two (still very small) personal projects of mine:
 - A [command execution engine](https://github.com/f4z3r/sofa) to run templated commands.
 
 Both projects are extremely small, with under two thousand lines of code. Both projects are written
-in Lua, a quite uncommon language. I wanted to see how the AI fares against something it is
-unlikely to have seen too much during its training.
+in Lua, a quite uncommon language. I wanted to see how the AI fares against something it is unlikely
+to have seen too much during its training.
 
-With that in mind, I wrote a [first pull
-request](https://github.com/f4z3r/gruvbox-material.nvim/pull/40) implementing a fix in highlight
-groups for pop-up menus in NeoVim. I enabled CodeRabbitAI to summarize the PR for me.
+With that in mind, I wrote a
+[first pull request](https://github.com/f4z3r/gruvbox-material.nvim/pull/40) implementing a fix in
+highlight groups for pop-up menus in NeoVim. I enabled CodeRabbitAI to summarize the PR for me.
 
 {{ image(src="/img/ai-agents/summary-first-pr-0.png",
          alt="Summary provided by CodeRabbitAI on my first PR", style="border-radius: 8px;") }}
@@ -123,28 +123,28 @@ The first PR was extremely trivial. It did not introduce any code containing log
 pointing out that it should probably have been two separate PRs, CodeRabbitAI fared as I would have
 expected another developer to have reviewed the PR. With two small differences:
 
-- The CodeRabbitAI review was close to **immediate** (took around 30-60 seconds to run). This is amazing
-  to iterate quickly.
+- The CodeRabbitAI review was close to **immediate** (took around 30-60 seconds to run). This is
+  amazing to iterate quickly.
 - Where I would have expected a human reviewer to point our the nitpick or simply approve,
-  CodeRabbitAI is extremely **verbose** with explanations, walkthroughs, and so on. This in turn wastes
-  time for the author, as he/she would need to read through this. The verbosity could be nicer on
-  larger PRs, but for small concise PRs this is massive overkill and borderline annoying.
+  CodeRabbitAI is extremely **verbose** with explanations, walkthroughs, and so on. This in turn
+  wastes time for the author, as he/she would need to read through this. The verbosity could be
+  nicer on larger PRs, but for small concise PRs this is massive overkill and borderline annoying.
 
 To further evaluate CodeRabbitAI's capabilities, I decided to test it on a pull request with more
 substantial changes...
 
 # A More Complex PR
 
-Armed with dampened expectations from my first PR, I opened [another
-PR](https://github.com/f4z3r/sofa/pull/3) in the command execution repository implementing a feature
-affecting multiple files. These changes also update existing logic.
+Armed with dampened expectations from my first PR, I opened
+[another PR](https://github.com/f4z3r/sofa/pull/3) in the command execution repository implementing
+a feature affecting multiple files. These changes also update existing logic.
 
 In this second PR, CodeRabbitAI went above and beyond, and generated a walkthrough containing two
 sequence diagrams showcasing the control flow of the code that was modified! I was actually quite
 impressed by this. While probably not necessary for the author of a PR, this is great even only for
 documentation purposes. New team members with less experience may benefit from such visual aids to
-understand complex logic within the code. Unfortunately the diagrams didn't highlight the *specific
-modifications* introduced by the pull request.
+understand complex logic within the code. Unfortunately the diagrams didn't highlight the _specific
+modifications_ introduced by the pull request.
 
 However, the supporting text suddenly becomes more relevant when considering such PRs.
 
@@ -171,12 +171,12 @@ turned out generic and not very informative. In CodeRabbitAI's defense, I am qui
 would have named that PR.
 
 I then tried to get it to write docstrings for new functions that were introduced in the PR. It
-massively misunderstood the request, and created [a PR adding docstrings to all
-functions](https://github.com/f4z3r/sofa/pull/4) in the affected files, even ones that already had
-docstrings... This goes to show that in some cases, it cannot even do what the most junior of all
-engineers would be capable of doing thanks to a even so tiny dose of common sense. Moreover, it
-started adding commits with emojis in the title. This goes to show that these AIs are probably not
-trained much on professional projects.
+massively misunderstood the request, and created
+[a PR adding docstrings to all functions](https://github.com/f4z3r/sofa/pull/4) in the affected
+files, even ones that already had docstrings... This goes to show that in some cases, it cannot even
+do what the most junior of all engineers would be capable of doing thanks to a even so tiny dose of
+common sense. Moreover, it started adding commits with emojis in the title. This goes to show that
+these AIs are probably not trained much on professional projects.
 
 {{ figure(src="/img/ai-agents/coderabbitai-commit-emoji.png",
           caption="CodeRabbitAI not only breaking conventional commits but introducing emojis...",
@@ -199,9 +199,9 @@ Finally, I also tried to get it to update the wording on a commit it did to use 
 commits. Unfortunately it seems that it only has access to the GitHub API and cannot execute any
 local `git` commands. It is therefore not able to perform some relatively common operations in the
 SDLC that are not part of the GitHub API. However, I am guessing this is subject to change
-relatively soon with the emergence of technologies such as the [model context
-protocol](https://modelcontextprotocol.io/introduction), which would enable it to control external
-tools such as `git`.
+relatively soon with the emergence of technologies such as the
+[model context protocol](https://modelcontextprotocol.io/introduction), which would enable it to
+control external tools such as `git`.
 
 All in all, I would say CodeRabbitAI did as I would have expected after the first PR. It corrected
 nitpicks and allowed me to perform some simple actions. Did it deliver a review of the same quality
@@ -216,9 +216,9 @@ principles, potentially leading to the introduction of redundant or suboptimal s
 # Dashboards!
 
 Another feature of AI agents next to the reviews is the analytics capabilities that come with them.
-In my personal opinion, analytics are important to measure the impact the introduction of
-such tooling has on the software delivery. CodeRabbitAI provides a couple nice dashboards on how
-much it is being used, and what kind of errors it helped uncover.
+In my personal opinion, analytics are important to measure the impact the introduction of such
+tooling has on the software delivery. CodeRabbitAI provides a couple nice dashboards on how much it
+is being used, and what kind of errors it helped uncover.
 
 {{ figure(src="/img/ai-agents/activity-dashboard.png",
           caption="Activity dashboard showing engagment with CodeRabbitAI",

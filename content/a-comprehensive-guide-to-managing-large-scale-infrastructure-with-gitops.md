@@ -165,7 +165,6 @@ applications such that they can slightly adapt the way they are installed. We wi
 into how this is done as it is highly dependent on the tooling you use (ArgoCD uses
 `ApplicationSet`, FluxCD uses variable substitution), but know this is enabled by such an approach.
 
-
 # Consolidating your Configuration
 
 In the organisation I first used GitOps at scale, we deployed all our components as Helm charts to a
@@ -179,8 +178,9 @@ When we then introduced GitOps, we decided to add a third repository containing 
 definition (in our case the `Application` declarations) for the component. Using the app-of-apps
 pattern from above, we could then reference each of these "GitOps repositories" and deploy specific
 overlays (customizations) of the `Application` to specific platforms. This worked well for quite
-some time. However, with time the number of components we managed increased, and so did the number of
-target platforms to which these components needed to be deployed. This lead to quite a few issues.
+some time. However, with time the number of components we managed increased, and so did the number
+of target platforms to which these components needed to be deployed. This lead to quite a few
+issues.
 
 When a new target platform was introduced, all such "GitOps repositories" needed to be updated to
 contain a new overlay customizing the `Application` to the specific platform. This is very tedious
@@ -234,8 +234,8 @@ Terraform as inputs to the GitOps configuration. How this is done in practice ve
 which tools you use. For instance, if looking at Terraform and FluxCD, a common way to achieve this
 is to have Terraform write a ConfigMap onto the AKS where the FluxCD controller will run containing
 all variables (and their values) that will be required by the GitOps configuration. The FluxCD
-controller then supports injecting variables from a ConfigMap via [variable
-substitution](https://fluxcd.io/flux/components/kustomize/kustomizations/#post-build-variable-substitution).
+controller then supports injecting variables from a ConfigMap via
+[variable substitution](https://fluxcd.io/flux/components/kustomize/kustomizations/#post-build-variable-substitution).
 
 Using a GitOps bridge has the advantage that changes in the Terraform configurations are much less
 likely to break the GitOps configuration that builds on top of it. Moreover, it allows Terraform to
@@ -255,5 +255,3 @@ practices:
 
 I hope this has helped you understand a bit better how to use GitOps at scale. If you have any
 questions or comments, feel free to let me know below.
-
-

@@ -700,12 +700,12 @@ to Reddit or Youtube, you find plenty of beef between people fighting about thes
 life depends on it. All I will say is this:
 
 - I can run docker build ... after each save on a file, since the caching is optimized to a point
-  where a full build on a code changes takes about 1-2 seconds. Being able to run this so often gives
-  me the confidence that what I will push will actually pass in the pipeline.
+  where a full build on a code changes takes about 1-2 seconds. Being able to run this so often
+  gives me the confidence that what I will push will actually pass in the pipeline.
 - Using proper caching makes me avoid having to wait 2-5 minutes each time I want to compile
   something. Since 2-5 minutes is typically too little for a context switch to something else, it
-  might be time I would have just sat around thinking about how much it sucks to wait on stuff. So it
-  has considerably improved not only my productivity, but also my mood.
+  might be time I would have just sat around thinking about how much it sucks to wait on stuff. So
+  it has considerably improved not only my productivity, but also my mood.
 - Docker avoids some "it works on my machine" issues. With proper version pinning and fully
   reproducible builds, it really nearly eradicates the issue. Now the only time something like this
   can happen is when running on different Docker versions.

@@ -10,16 +10,17 @@ faster. I am passionate about cloud native software and infrastructure, security
 various programming languages.
 
 I work on a variety of projects in various roles, such as:
+
 - I am a principal software architect at [ipt](https://ipt.ch/en/), working on various mandates.
-- I try to contribute to open source, on projects such as [HashiCorp
-  Vault](https://github.com/hashicorp/vault), the Kubernetes ecosystem, and various others.
+- I try to contribute to open source, on projects such as
+  [HashiCorp Vault](https://github.com/hashicorp/vault), the Kubernetes ecosystem, and various
+  others.
 - I am the current maintainer of the
   [`gruvbox-material.nvim`](https://github.com/f4z3r/gruvbox-material.nvim) NeoVim plugin.
 - I am the author of a couple Lua tools and libraries such as
-  [`sofa`](https://github.com/f4z3r/sofa),
-  [`luatext`](https://github.com/f4z3r/luatext),
-  [`luatables`](https://github.com/f4z3r/luatables),
-  and [`luakube`](https://github.com/f4z3r/luakube).
+  [`sofa`](https://github.com/f4z3r/sofa), [`luatext`](https://github.com/f4z3r/luatext),
+  [`luatables`](https://github.com/f4z3r/luatables), and
+  [`luakube`](https://github.com/f4z3r/luakube).
 - I am hacking away on my [NixOS setup](https://github.com/f4z3r/nix).
 
 I am currently very interested in Rust, Zig, and WASM as a runtime for serverless code on

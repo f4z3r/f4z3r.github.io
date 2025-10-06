@@ -12,7 +12,6 @@ tags = ["wasm", "cloud", "rust", "kubernetes"]
           size="width:100%;height:300px;",
           style="margin:-7% 0") }}
 
-
 Over the past few months I have invested some time to contribute to an open source project I find
 fascinating: [wasmCloud](https://wasmcloud.com/). As a platform engineer and architect, I am very
 familiar with how software platforms are typically built in practice. However, with the ubiquity of
@@ -47,19 +46,19 @@ runtime and a potential replacement for containers.
 
 Modern platforms nearly all build on top of containers as their foundational element to run
 executable code. This is a logical evolution from Docker meteoric growth, and the ecosystem that
-grew around its open standards (such as the [OCI - Open Container
-Initiative](https://opencontainers.org/)). While containers provide a huge step in terms of ease of
-use, standardization, and security compared to shipping raw artefacts to virtual machines, as was
-the case before them, they do have some shortcomings.
+grew around its open standards (such as the
+[OCI - Open Container Initiative](https://opencontainers.org/)). While containers provide a huge
+step in terms of ease of use, standardization, and security compared to shipping raw artefacts to
+virtual machines, as was the case before them, they do have some shortcomings.
 
 First and foremost, containers are not composable. In part due to their flexibility, they do not
 offer standard ways of expressing how the world should interact with them at runtime, or what they
 rely on to perform their functionality. This means that containers are typically deployed as REST
 based microservices, where containers communicate with one another over a network using APIs agreed
 upon outside of the container standards. This lack of standardization makes building reusable
-components more challenging than it has to be. Moreover, each container essentially needs a
-server, authentication, authorization, and more to run. This results in quite some waste in the
-compute density of the platform, with lots of compute wasted on boilerplate.
+components more challenging than it has to be. Moreover, each container essentially needs a server,
+authentication, authorization, and more to run. This results in quite some waste in the compute
+density of the platform, with lots of compute wasted on boilerplate.
 
 Moreover, while containers are a huge step in the right direction in terms of security, they are not
 quite as secure as most people are led to believe. Containers are "allow by default" constructs,
@@ -167,7 +166,6 @@ As a reference, here is the diagram wasmCloud uses to provide an overview of the
           caption_style="font-weight: bold; font-style: italic;",
           style="border-radius: 8px;") }}
 
-
 ## Hosts
 
 wasmCloud hosts are the foundation of the compute platform that is provided. They are the equivalent
@@ -256,11 +254,12 @@ needed.
 - some stuff does not yet truly work
 - number of providers is incredibly small
 - needs very strong platform team, as even more stuff is shifted to the platform (providers etc).
-But a good shift -> shift down
+  But a good shift -> shift down
 
 ---
 
 Addressing:
+
 - proud of: contributed and got stuff to work
 - pained: understanding the whole stuff is difficult
 - passionate: wasm
