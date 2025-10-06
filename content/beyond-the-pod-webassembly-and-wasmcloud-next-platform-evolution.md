@@ -1,10 +1,9 @@
 +++
-title = "WasmCloud: an intro"
+title = "Beyond the Pod: Why wasmCloud and WebAssembly Might Be the Next Evolution of the Platform"
 date = 2025-06-18
 
 [taxonomies]
 tags = ["wasm", "cloud", "rust", "kubernetes"]
-
 +++
 
 {{ banner(src="/img/wasmcloud/assembly-line.jpeg",
@@ -45,7 +44,7 @@ runtime and a potential replacement for containers.
 # WebAssembly as a Platform Foundation
 
 Modern platforms nearly all build on top of containers as their foundational element to run
-executable code. This is a logical evolution from Docker meteoric growth, and the ecosystem that
+executable code. This is a logical evolution from Docker's meteoric growth, and the ecosystem that
 grew around its open standards (such as the
 [OCI - Open Container Initiative](https://opencontainers.org/)). While containers provide a huge
 step in terms of ease of use, standardization, and security compared to shipping raw artefacts to
@@ -53,9 +52,9 @@ virtual machines, as was the case before them, they do have some shortcomings.
 
 First and foremost, containers are not composable. In part due to their flexibility, they do not
 offer standard ways of expressing how the world should interact with them at runtime, or what they
-rely on to perform their functionality. This means that containers are typically deployed as REST
-based microservices, where containers communicate with one another over a network using APIs agreed
-upon outside of the container standards. This lack of standardization makes building reusable
+rely on to perform their functionality. This means that containers are typically deployed as
+REST-based microservices, where containers communicate with one another over a network using APIs
+agreed upon outside of the container standards. This lack of standardization makes building reusable
 components more challenging than it has to be. Moreover, each container essentially needs a server,
 authentication, authorization, and more to run. This results in quite some waste in the compute
 density of the platform, with lots of compute wasted on boilerplate.
@@ -78,12 +77,12 @@ addressed by the component model.
 
 The [component model](https://component-model.bytecodealliance.org/) is a way that WebAssembly
 modules can be built with metadata attached to them which describe their imports and exports based
-on a rich time system. Moreover, they are composable such that a new component can be built from
+on a rich type system. Moreover, they are composable such that a new component can be built from
 existing components as long as the imports of one are satisfied by the exports of another. This
 means that components can interact with one another via direct method/function calls, whose
-specification is fully standardized. This interface specification is declered in a language known as
+specification is fully standardized. This interface specification is declared in a language known as
 the WebAssembly Interface Types (WIT) language. An example of a WIT specification of a component
-relying on a clock system can be seen below:
+relying on a system clock can be seen below:
 
 ```wit
 package wasi-example:clocks;
@@ -104,6 +103,10 @@ interface wall-clock {
 }
 ```
 
+> WIT can be compared to the
+> [Interface Definition Language (IDL)](https://en.wikipedia.org/wiki/Interface_description_language)
+> from gRPC but for wasm components.
+
 This declaration says that the component relies on an interface `wall-clock` (it `import`s the
 interface) which defines two functions: `now` and `resolution`. Both take no arguments and return a
 `datetime` object consisting of a `seconds` and `nanoseconds` field. This component could then be
@@ -120,7 +123,7 @@ formalize interfaces between WebAssembly core modules.
 
 Whereas containers provide some form of security by namespacing processes and filesystems,
 WebAssembly actually sandboxes modules such that they cannot affect one another, or the host they
-run on. By default a WebAssembly module cannot perform any privileged action but needs to be granted
+run on. By default a WebAssembly module cannot perform any privileged action and needs to be granted
 explicit permission. I will not dive deeper into the details of this or I might loose myself in a
 rant on how software security in the modern day and age is abysmal.
 
@@ -132,7 +135,7 @@ already, for instance in use cases such as serverless computing, where hyperscal
 WebAssembly as a runtime to reduce cold start times, and reduce the delay in function calls.
 
 Considering the idea to avoid having long running servers providing REST APIs and move to raw
-function calls on short running modules, having extremely short start times is critical.
+function calls on short running modules, having extremely short start times is imperative.
 
 Alright, so we can see that WebAssembly can be a great choice for the foundation runtime of a
 platform. So where are platforms leveraging this? Well, actually, quite some "platforms" leverage
@@ -154,10 +157,10 @@ Let us look at the wasmCloud architecture a little.
 
 > This section will contain quite a few comparisons to Kubernetes concepts.
 
-Generally, the wasmCloud architecture can is quite similar to the Kubernetes architecture, with the
-difference being that wasmCloud does not provide as much flexibility in swaping out components as
-Kubernetes does. This makes sense as it is a more nascent technology and is currently more
-opinionated.
+Generally, the wasmCloud architecture can be seen as quite similar to the Kubernetes architecture,
+with the difference being that wasmCloud does not provide as much flexibility in swapping out
+building blocks as Kubernetes does. This makes sense as it is a more nascent technology and is
+currently more opinionated.
 
 As a reference, here is the diagram wasmCloud uses to provide an overview of the platform:
 
@@ -166,6 +169,12 @@ As a reference, here is the diagram wasmCloud uses to provide an overview of the
           caption_style="font-weight: bold; font-style: italic;",
           style="border-radius: 8px;") }}
 
+As one can see, the architecture is essentially a set of hosts connected via a so called "lattice".
+Thus, the architecture distributes the runtime over a set of compute instances in order to achieve
+resilience against hardware/compute failures. The principle is identical to the one from Kubernetes,
+providing a cluster in order to be able to quickly shift payloads on the platform to different nodes
+in case of node failures.
+
 ## Hosts
 
 wasmCloud hosts are the foundation of the compute platform that is provided. They are the equivalent
@@ -173,13 +182,15 @@ of Kubernetes nodes and provide a WebAssembly runtime for components to run on. 
 Kubernetes nodes, application developers will rarely need to worry about the hosts other than for
 deployment affinities and the like.
 
-In practice, hosts can be anything from a virtual machine, an IoT device, or a pod running on
-Kubernetes.
+In practice, hosts can be anything from a virtual machine, an IoT device, or even a pod running on
+Kubernetes. In fact, hosting wasmCloud on Kubernetes is a relatively straight forward way to get
+started with the technology, providing wasmCloud as an application runtime, while providing services
+via Kubernetes.
 
 ## Lattice
 
 The wasmCloud lattice is its networking layer. This can seem a bit strange when considering that
-this a NATS instance.
+this a [NATS](https://nats.io/) instance.
 
 > For those unfamiliar with NATS: it is an event streaming component similar to Kafka, but provides
 > additional features such as a key values store, an object store, and publish-subscribe
@@ -193,8 +204,24 @@ distribute events to its different instances, but wasmCloud then only needs to u
 
 Essentially, every component exposing a function becomes a subscriber to a queue for this function
 on NATS. Other components can then call this function via wRPC (gRPC for WebAssembly) by publishing
-a call to the queue. However, as a user of wasmCloud, you do not need to worry about this. How
-function calls are preformed under the hood is abstracted away from the user.
+a call to some subject. This is quite different from Kubernetes networking, where calls need to know
+the location of the callee in the network. Using a subject-based addressing model simplifies
+deployment and improves scaling and resilience.
+
+As a user of wasmCloud, you do not need to worry about this though. How function calls are preformed
+under the hood is abstracted away from the user.
+
+This distributed networking aspect is one of the superpowers of wasmCloud, as one does not need to
+worry about how to address a component on the platform. However, it can also introduce strange
+behaviour in some cases. For instance, on Kubernetes, it's common sense that a HTTP call to a
+different pod running on the cluster can fail. On wasmCloud however, if the interface we are calling
+from a different component returns some type, we use the component like a raw function call in our
+components code. What if that call fails, not because of the called component but due to a
+networking issue? In the current implementation of wasmCloud this will lead to a panic in the
+caller. As this is typically not the desired outcome, efforts are underway to design an adapted way
+how the interfaces need to be designed to handle failures in the transport layer. On top of that,
+function calls might change such that might avoid using NATS as a transport layer if the component
+being called in on the same host and the caller.
 
 ## Capabilities
 
@@ -203,73 +230,98 @@ standardized way interfaces can be declared in the component model, one can desc
 interface which provides some functionality, without providing an implementation. This is what
 capabilities are. They are abstract interfaces that describe some useful functionality, such as
 reading and writing to a key value store, or retrieving some sensitive information from a secured
-environment. These capabililites are published on wasmCloud for applications to use.
+environment. These capabilities are published on wasmCloud for applications to use.
 
 An application developer can then write a component that makes use of that interface if he/she needs
 that functionality. He/she does not need to worry about how this capability is implemented. He
 relies on the "contract" provided by the capability.
 
-In my opinion, while this is quite the brainfuck initially, this is what makes wasmCloud so
+In my opinion, while this is quite challenging to grasp initially, this is what makes wasmCloud so
 promising. Having worked on many platforms in the past, the main challenge is always how additional
 services can be provided on top of raw platforms such as Kubernetes in a way that makes then highly
 standardized while easily consumable. In the current state of platform engineering, this quickly
-becomes a question of good product management. Unfortunately, does this correctly is surprisingly
-difficult. Capabilities provide a technical solution to this, which the only limitation that it is
-completly incompatible with existing software.
+becomes a question of good product management. Unfortunately, doing this correctly is surprisingly
+difficult. Capabilities provide a technical solution to this, with the only limitation being
+complete incompatibility with existing software.
 
 ## Providers
 
 A provider is a specific implementation of a capability. For instance, taking the example of the
 capability enabling the reading and writing to a key value store, a provider might implement this by
-having a ValKey instance backing the capability. Another provider might implement the very same
-capability using NATS, Redis, or even an in-memory key-value store.
+having a [ValKey](https://valkey.io/) instance backing the capability. Another provider might
+implement the very same capability using NATS, Redis, or even an in-memory key-value store.
 
-Abstracting the provider away from the consume via a capability enables the platform to swap
+Abstracting the provider away from the consumer via a capability enables the platform to swap
 providers based on needs. Of course performing such a swap might be quite complex, for instance
 involving a data migration from NATS to ValKey. However, the beauty is that the applications do not
 require any changes as would be the case in traditional platforms.
 
-It should be noted that the provider might run completly outside of wasmCloud itself. However,
-wasmCloud also provides internal provider that are backed into the hosts themselves, providing
+It should be noted that the provider might run completely outside of wasmCloud itself. However,
+wasmCloud also provides internal providers that are backed into the hosts themselves, providing
 functionality such as logging or randomness.
 
 ## Components
 
 Components refer to the WebAssembly payload that contain your business logic. In the traditional
-sense, this is your application. However, in wasmCloud lingo, the application is the component
-including all information about what capabilities it requires, etc.
+sense, this is your application. However, in wasmCloud lingo, an application is a set of interlinked
+components including all information about what capabilities they require.
+
+## Applications
+
+Applications are an abstraction enabling to declaratively define a combination of components,
+capabilities, and providers together into a deployable unit. Applications are based on the
+[open application model (OAM)](https://oam.dev/) and should thus look quite familiar to people
+working with Kubernetes. In terms of definition, they are similar to a Kubernetes Deployment,
+describing not only the deployment unit (component or pod in the Kubernetes context), but also its
+replication, affinities, links to capabilities, etc.
+
+> It should be noted that in wasmCloud v2, applications are re-worked to be much more closely
+> modelled after Kubernetes Deployments and ReplicaSets. Version 2 drops the idea of Applications
+> alltogether and uses `Workload`, `WorkloadReplicaSets`, and `WorkloadDeployments` objects. These
+> are also no longer linked to the OAM. In all likelihood we will write another blog post showcasing
+> the capabilities of composition provided by version 2 in the future.
 
 ## wadm
 
-The wasmCloud Application Deployment Manager (wadm) manages the declarative application deployments.
-It leverages the Open Application Model (https://oam.dev/). It can be seen as a hybrid between the
-deployment controller on Kubernetes and the API server. The idea here is that wasmCloud applications
-should be defined declaratively similar to how Kubernetes works. wadm is the component which
-interprets these declarations and then orchestrates the deployment of components and providers as
-needed.
+The wasmCloud Application Deployment Manager (wadm) manages Applications. It can be seen as the
+deployment controller from Kubernetes for wasmCloud Applications. It essentially orchestrates the
+deployment of components, capabilities, their links, etc. on the platform. This construct will also
+be dropped with wasmCloud version 2.
 
-## Drawbacks
+# Security
 
-- learning curve
-- some stuff does not yet truly work
-- number of providers is incredibly small
-- needs very strong platform team, as even more stuff is shifted to the platform (providers etc).
-  But a good shift -> shift down
+As I considered the architecture of wasmCloud, especially the component-to-provider links, a
+critical question came to mind: How are calls between components and providers authorized? As
+someone doing a lot of security work, I like to be able to have tight controls over such operations.
+Of course, components need to be linked to capabilities explicitly in order to be able to use them.
+However, since capabilities tend to implement rather broad interfaces, it begs the question how one
+controls what operations are allowed to be performed against a capability. For instance, let us
+consider the PostgreSQL capability. This essentially defines a single function `query` that enables
+a component to perform a query against some PostgreSQL database backed by the provider. However, I
+might have some components to which I only want to grant read access to specific data on the
+database, while other components need full write access.
 
----
+The short answer is that links between components and to providers are held within the same
+application. Such an application is a construct managed by a single team, thus not necessarily
+relying on tight controls. Connections between applications, and thus between teams, still run over
+interfaces such as HTTP, and can thus be controlled in standard ways (for instance via API Gateways
+and similar controls). On top of that, any components being retrieved from outside an organisation
+tend to be digitally signed, and are then validated by the runtime before executing them.
 
-Addressing:
+# Verdict
 
-- proud of: contributed and got stuff to work
-- pained: understanding the whole stuff is difficult
-- passionate: wasm
+wasmCloud is a relatively new platform and provides interesting new approaches to how
+inter-component communication can be modeled. On top of that, it does it building on open standards
+such as WebAssembly and the component model, such that the business logic of your application
+remains portable. While these new concepts are very promising, wasmCloud still suffers from a couple
+drawbacks:
 
-# Key Questions
-
-- Who do you want to read this? Developers and architects that want to learn more
-- What do they know about what you're planning to write? Kubernetes, JARs, WebAssembly.
-- Why do they care about what you're planning to write? because it is a cool piece of tech that is
-  quite novel and has a lot of potential
-- Why should they care about your perspective? I have made quite a lot of experience with it
-- What do you want them to do differently or think about differently after reading your blog post?
-  try it out
+- For people unfamiliar with WebAssembly, it has a quite steep learning curve. This is highly
+  accentuated for people unfamiliar with existing platforms such as Kubernetes.
+- The set of supported providers and capabilities is extremely small to date. This will of course
+  grow as adoption increases, but currently early adopters will have to write their own providers
+  most of the time and will not be able to rely on third-party components.
+- As wasmCloud shifts more responsibility to the platform level, it will require a strong platform
+  team to operate this with low developer friction. This can be an issue as finding highly skilled
+  platform engineers is quite difficult at the moment. However, the team behind wasmCloud is focused
+  on making application delivery as frictionless as possible.
