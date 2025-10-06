@@ -19,6 +19,7 @@
             packages = [
               fish
               zola
+              prettier
             ];
             # shellHook = ''
             #   exec fish

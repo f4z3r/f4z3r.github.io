@@ -1,0 +1,15 @@
+name: Lint
+on:
+  pull_request:
+    branches: [main]
+jobs:
+  prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - name: Lint Markdown
+        uses: creyD/prettier_action@8c18391fdc98ed0d884c6345f03975edac71b8f0 # v4.6
+        with:
+          prettier_options: -c --ignore-unknown ./content/
+          dry: "true"

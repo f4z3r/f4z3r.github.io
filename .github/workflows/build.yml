@@ -1,3 +1,4 @@
+name: Build
 on: push
 jobs:
   build_and_deploy:
@@ -6,13 +7,12 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: 'checkout'
+      - name: "checkout"
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-      - name: 'build and deploy'
+      - name: "build and deploy"
         uses: shalzz/zola-deploy-action@master
         env:
           PAGES_BRANCH: gh-pages
           BUILD_DIR: .
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPOSITORY: f4z3r/f4z3r.github.io
-
