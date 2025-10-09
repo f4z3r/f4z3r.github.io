@@ -1,6 +1,6 @@
 +++
 title = "Beyond the Pod: Why wasmCloud and WebAssembly Might Be the Next Evolution of the Platform"
-date = 2025-06-18
+date = 2025-10-09
 
 [taxonomies]
 tags = ["wasm", "cloud", "rust", "kubernetes"]
