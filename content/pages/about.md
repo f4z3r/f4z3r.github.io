@@ -23,7 +23,7 @@ I work on a variety of projects in various roles, such as:
   and [`luakube`](https://github.com/f4z3r/luakube).
 - hacking away on my [NixOS setup](https://github.com/f4z3r/nix).
 - preaching on split keyboards, NeoVim, and other pretty useless but incredibly fun things to anyone
-  what wants to led me their ear.
+  what wants to lend me their ear.
 
 I am currently very interested in Rust, Zig, and WASM as a runtime for serverless code on
 Kubernetes. Moreover, I am trying to re-invent the wheel by building CLI libraries for LuaJIT, just
