@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>The Tortoise and the Hare: do AI Agents Really Help for Software Development? | f4z3r&#x27;s blog</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://f4z3r.github.io/style.css">
+    <link rel="stylesheet" href="https://f4z3r.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://f4z3r.github.io/color/background_dark.css">
+    
+    <link rel="stylesheet" href="https://f4z3r.github.io/font-hack-subset.css">
+
+    <meta name="description" content="">
+
+    <meta property="og:description" content="">
+    <meta property="og:title" content="The Tortoise and the Hare: do AI Agents Really Help for Software Development? | f4z3r's blog">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://f4z3r.github.io/the-tortoise-and-the-hare-do-ai-agents-really-help/">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:title" content="The Tortoise and the Hare: do AI Agents Really Help for Software Development? | f4z3r's blog">
+    <meta property="twitter:domain" content="f4z3r.github.io">
+    <meta property="twitter:url" content="https://f4z3r.github.io/the-tortoise-and-the-hare-do-ai-agents-really-help/">
+
+                <link rel="alternate" type="application/rss+xml" title="f4z3r&#x27;s blog RSS Feed" href="https://f4z3r.github.io/rss.xml" />
+                <link rel="alternate" type="application/atom+xml" title="f4z3r&#x27;s blog Atom Feed" href="https://f4z3r.github.io/atom.xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+</head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://f4z3r.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            f4z3r&#x27;s blog
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://f4z3r.github.io">blog</a></li>
+            
+                <li><a href="https://f4z3r.github.io/tags">tags</a></li>
+            
+                <li><a href="https://f4z3r.github.io/about">about me</a></li>
+            
+                <li><a href="https://github.com/f4z3r/" target="_blank" rel="noopener noreferrer">github</a></li>
+            
+                <li><a href="https://www.linkedin.com/in/jakob-beckmann/" target="_blank" rel="noopener noreferrer">linkedin</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://f4z3r.github.io/the-tortoise-and-the-hare-do-ai-agents-really-help/">The Tortoise and the Hare: do AI Agents Really Help for Software Development?</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-04-19
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/ai/">#ai</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/devex/">#devex</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/devops/">#devops</a></span>
+    
+
+        <div class="post-content">
+            
+  
+  
+    
+    
+  
+  <div style="overflow:hidden;width:100%;height:300px;">
+    <img src="https://f4z3r.github.io/img/ai-agents/robot-ai.jpeg" alt="A robot working on a computer writing code." class="center" style="margin:-20% 0" decoding="async" loading="lazy"/>
+  </div>
+
+
+<!--
+vim: ft=liquid
+-->
+<p>Making my development workflow as fast as possible is a big passion of mine. From customizing my
+development setup to get the last inkling of efficiency out of it, to thinking how to manage notes
+and knowledge resources to access them as quickly as possible. With the sudden ubiquity of AI in
+development tools, I came to wonder how AI could help me write code faster. Being quite the skeptic
+when it comes to AI actually generating code for me (using tools such as Cursor or GitHub Copilot),
+I came to investigate AI agents which specialise in code reviews. In this blog post I will share my
+experience using such an agent on a real world case. I will explore where such agents shine and
+where they are severely lacking.</p>
+<span id="continue-reading"></span><h1 id="i-am-an-ai-skeptic">I am an AI Skeptic</h1>
+<p>Generally I am not fond of using AI to develop software. My background is mostly in systems
+software, where correctness of the software can be critical. This means that using tooling that is
+non-deterministic and might not produce adequate results makes me uneasy. Furthermore, even if AI
+were to produce amazing results, a developer relying on it could quickly lose understanding of the
+code. This results in skill atrophy and large risks if the AI reaches the limits of its
+capabilities. In other words, I am not keen on having any AI generating code for me on a large scale
+for anything more than a proof of concept or low risk project.</p>
+<p>Nonetheless, one would be foolish to ignore AI's capabilities when it comes to developer tooling.</p>
+<h1 id="ai-support-agents">AI Support Agents</h1>
+<p>Thus starts my journey investigating AI agents that can support me in the software development
+lifecycle, but whose main use is <em>not</em> to generate code. Many such agents exist, mostly focusing on
+reviewing code. I am quite the fan of such a use case, as the AI essentially plays the role of
+another developer I might work with. It reviews my code, provides feedback, suggestions, and
+potentially even improvements. It however does this immediately after I have opened a pull request,
+rather than having to wait for days or weeks on a human review.</p>
+<p>How is this different from using an AI that generates code you might ask? The main difference lies
+in the fact that I still have to think on how to solve the problem I am working on, and provide a
+base solution. This forces me to understand the issue at hand. Thus, I am much better prepared to
+accept or reject any suggestions from an AI than if the AI just generated a first solution for me.
+Moreover, people (myself included) tend to be slightly defensive about the code they write. Thus I
+will, in all likelihood, only accept AI generated code improvements if it offers a real improvement,
+rather than blindly incorporating them into the codebase.</p>
+<p>All in all, it is extremely unlikely that I will lose understanding of the codebase or have my
+problem solving skills atrophy, but I can iterate on reviews much faster.</p>
+<h1 id="coderabbitai">CodeRabbitAI</h1>
+<p>In order to gain first experiences with such an AI agent, I chose to try out
+<a rel="noopener nofollow noreferrer external" target="_blank" href="https://www.coderabbit.ai/">CodeRabbitAI</a>. This was not a thoroughly researched decision. The main
+reason I chose CodeRabbitAI is that I could try it out for free during 14 days and that it
+integrates well with GitHub. I am aware that performance between AI models varies greatly. However,
+CodeRabbitAI uses Claude under the hood, a model typically known to perform surprising well on
+programming tasks. I thus expect it to not perform significantly worse than any other state of the
+art model out there.</p>
+<h1 id="starting-small">Starting Small</h1>
+<p>In my opinion, such agents need to be tested on real world examples. One can see demos using AI to
+generate a dummy web app all over the place. However, common software projects are significantly
+larger, contain more complex logic, and are less standardized than these demos. Unfortunately, most
+software I work on professionally is not publicly available, so I cannot use CodeRabbitAI on these.
+I therefore picked two (still very small) personal projects of mine:</p>
+<ul>
+<li>A <a rel="noopener nofollow noreferrer external" target="_blank" href="https://github.com/f4z3r/gruvbox-material.nvim">NeoVim plugin</a> providing a colour scheme.</li>
+<li>A <a rel="noopener nofollow noreferrer external" target="_blank" href="https://github.com/f4z3r/sofa">command execution engine</a> to run templated commands.</li>
+</ul>
+<p>Both projects are extremely small, with under two thousand lines of code. Both projects are written
+in Lua, a quite uncommon language. I wanted to see how the AI fares against something it is unlikely
+to have seen too much during its training.</p>
+<p>With that in mind, I wrote a
+<a rel="noopener nofollow noreferrer external" target="_blank" href="https://github.com/f4z3r/gruvbox-material.nvim/pull/40">first pull request</a> implementing a fix in
+highlight groups for pop-up menus in NeoVim. I enabled CodeRabbitAI to summarize the PR for me.</p>
+
+  
+  
+    
+    
+  
+  <div class="zoomable-image-container">
+    <img src="https://f4z3r.github.io/img/ai-agents/summary-first-pr-0.png" alt="Summary provided by CodeRabbitAI on my first PR" class="center" style="border-radius: 8px;" decoding="async" loading="lazy"/>
+  </div>
+
+<p>The summary looks good, even though it somehow marks some fixes as features. This is especially
+intriguing as I use <a rel="noopener nofollow noreferrer external" target="_blank" href="https://www.conventionalcommits.org/en/v1.0.0/">conventional commits</a> and
+explicitly marked these changes as fixes. Additionally, CodeRabbitAI offers a "walkthrough" of the
+changes made in the PR. In the case of such a simple PR, I found the walkthrough to be mostly
+confusing. In the case of larger PRs I can however see how this may be appealing.</p>
+
+  <figure class="center" >
+    <div class="zoomable-image-container">
+      <img src="/img/ai-agents/walkthrough-first-pr.png" style="border-radius: 8px;" decoding="async" loading="lazy"/>
+    </div>
+    
+      <figcaption class="center" style="font-weight: bold; font-style: italic;"><p>A walkthrough of the changes in the first PR</p>
+</figcaption>
+    
+  </figure>
+
+<p>In reality, I initially opened the PR with only the fixes the pop-up menus. I then pushed commits
+introducing the support for additional plugins later on. I would have expected CodeRabbitAI to
+complain that the new commits introduce changes unrelated to the PR, which is not seen as best
+practice. It did nothing of the sort.</p>
+<p>While the summary, walkthrough, and disregard for best practices were unsatisfying, one unexpected
+benefit emerged: the integration of linting feedback directly within the pull request comments. It
+provided nitpicks from linting tools (in this case
+<a rel="noopener nofollow noreferrer external" target="_blank" href="https://github.com/DavidAnson/markdownlint"><code>markdownlint</code></a>. On one side, it is very disappointing
+to see that the AI agent did nothing more than lint the code and generate a nice comment out of the
+output. On the other hand it is quite nice that it introduces "quality gates" such as linting
+without me having to write a pipeline for it. Moreover, producing easily digestible output from a
+linter is nothing to be underestimated. The quality of life of having this directly as a comment
+rather than having to go through pipeline logs to read the raw linter output is quite nice. Is it
+worth two dozen USD per month? No, definitely not!</p>
+<p>On the upside, it did update the summary of the PR to reflect the other changes:</p>
+
+  
+  
+    
+    
+  
+  <div class="zoomable-image-container">
+    <img src="https://f4z3r.github.io/img/ai-agents/summary-first-pr-1.png" alt="Updated summary provided by CodeRabbitAI on my first PR" class="center" style="border-radius: 8px;" decoding="async" loading="lazy"/>
+  </div>
+
+<p>The first PR was extremely trivial. It did not introduce any code containing logic. Other than not
+pointing out that it should probably have been two separate PRs, CodeRabbitAI fared as I would have
+expected another developer to have reviewed the PR. With two small differences:</p>
+<ul>
+<li>The CodeRabbitAI review was close to <strong>immediate</strong> (took around 30-60 seconds to run). This is
+amazing to iterate quickly.</li>
+<li>Where I would have expected a human reviewer to point our the nitpick or simply approve,
+CodeRabbitAI is extremely <strong>verbose</strong> with explanations, walkthroughs, and so on. This in turn
+wastes time for the author, as he/she would need to read through this. The verbosity could be
+nicer on larger PRs, but for small concise PRs this is massive overkill and borderline annoying.</li>
+</ul>
+<p>To further evaluate CodeRabbitAI's capabilities, I decided to test it on a pull request with more
+substantial changes...</p>
+<h1 id="a-more-complex-pr">A More Complex PR</h1>
+<p>Armed with dampened expectations from my first PR, I opened
+<a rel="noopener nofollow noreferrer external" target="_blank" href="https://github.com/f4z3r/sofa/pull/3">another PR</a> in the command execution repository implementing
+a feature affecting multiple files. These changes also update existing logic.</p>
+<p>In this second PR, CodeRabbitAI went above and beyond, and generated a walkthrough containing two
+sequence diagrams showcasing the control flow of the code that was modified! I was actually quite
+impressed by this. While probably not necessary for the author of a PR, this is great even only for
+documentation purposes. New team members with less experience may benefit from such visual aids to
+understand complex logic within the code. Unfortunately the diagrams didn't highlight the <em>specific
+modifications</em> introduced by the pull request.</p>
+<p>However, the supporting text suddenly becomes more relevant when considering such PRs.</p>
+
+  <figure class="center" >
+    <div class="zoomable-image-container">
+      <img src="/img/ai-agents/sequence-diagram.png" style="border-radius: 8px;" decoding="async" loading="lazy"/>
+    </div>
+    
+      <figcaption class="center" style="font-weight: bold; font-style: italic;"><p>One of the sequence diagrams generated by CodeRabbitAI</p>
+</figcaption>
+    
+  </figure>
+
+<p>On top of that, CodeRabbitAI actually posted interesting comments. It found the odd nitpick here and
+there, but also found more meaningful potential issues. For instance, I modified a test
+configuration to use a different shell. CodeRabbitAI identified that this shell is not listed as a
+dependency anywhere in the repository, and that it would thus not work off-the-shelf. In this case
+this was only a test file used to parse the configuration and the configured shell did not affect
+anything, but this is a great finding generally.</p>
+<p>I also started conversing with CodeRabbitAI about some changes. Requesting it to give me a
+suggestion on some configurations. It managed just fine, but did not actually provide these as code
+suggestions that can be applied, but rather as code blocks in comments, which was a bit
+disappointing.</p>
+<p>Additionally, I decided to try to use CodeRabbitAI's commands feature. This enables ChatOps to
+control actions taken by CodeRabbitAI. I generated the PR title using one such command. The title
+turned out generic and not very informative. In CodeRabbitAI's defense, I am quite unsure how I
+would have named that PR.</p>
+<p>I then tried to get it to write docstrings for new functions that were introduced in the PR. It
+massively misunderstood the request, and created
+<a rel="noopener nofollow noreferrer external" target="_blank" href="https://github.com/f4z3r/sofa/pull/4">a PR adding docstrings to all functions</a> in the affected
+files, even ones that already had docstrings... This goes to show that in some cases, it cannot even
+do what the most junior of all engineers would be capable of doing thanks to a even so tiny dose of
+common sense. Moreover, it started adding commits with emojis in the title. This goes to show that
+these AIs are probably not trained much on professional projects.</p>
+
+  <figure class="center" >
+    <div class="zoomable-image-container">
+      <img src="/img/ai-agents/coderabbitai-commit-emoji.png" style="border-radius: 8px;" decoding="async" loading="lazy"/>
+    </div>
+    
+      <figcaption class="center" style="font-weight: bold; font-style: italic;"><p>CodeRabbitAI not only breaking conventional commits but introducing emojis...</p>
+</figcaption>
+    
+  </figure>
+
+<p>After that first disaster, with significantly less ambition, I requested it creates a PR to change a
+small typo. CodeRabbitAI informed me that it created a branch with the changes included, but that it
+was not capable of creating pull requests. This shocked me, considering it had created its first
+disaster PR no 10 minutes before.</p>
+
+  
+  
+    
+    
+  
+  <div class="zoomable-image-container">
+    <img src="https://f4z3r.github.io/img/ai-agents/correct-typo-second-pr.png" alt="Fighting with CodeRabbitAI to fix my typo." class="center" style="border-radius: 8px;" decoding="async" loading="lazy"/>
+  </div>
+
+<p>After another nudge, CodeRabbitAI however did <a rel="noopener nofollow noreferrer external" target="_blank" href="https://github.com/f4z3r/sofa/pull/5">create a PR</a>.
+It targeted <code>main</code> instead of the branch I was initially using. I guess this is my own fault though
+for not being specific enough.</p>
+<p>Finally, I also tried to get it to update the wording on a commit it did to use conventional
+commits. Unfortunately it seems that it only has access to the GitHub API and cannot execute any
+local <code>git</code> commands. It is therefore not able to perform some relatively common operations in the
+SDLC that are not part of the GitHub API. However, I am guessing this is subject to change
+relatively soon with the emergence of technologies such as the
+<a rel="noopener nofollow noreferrer external" target="_blank" href="https://modelcontextprotocol.io/introduction">model context protocol</a>, which would enable it to
+control external tools such as <code>git</code>.</p>
+<p>All in all, I would say CodeRabbitAI did as I would have expected after the first PR. It corrected
+nitpicks and allowed me to perform some simple actions. Did it deliver a review of the same quality
+like a senior engineer familiar with the project would have? No. In fact, in order to test this I
+intentionally implemented a feature that was already present in the repository, while making a
+couple design decisions that go against most of what the rest of the repository does. CodeRabbitAI
+neither detected that the logic I was introducing was already present in the codebase, nor did it
+complain about the sub-optimal design decisions. This goes to show that such agents are still not
+capable replacing humans with nuanced understanding of the project's history and architectural
+principles, potentially leading to the introduction of redundant or suboptimal solutions.</p>
+<h1 id="dashboards">Dashboards!</h1>
+<p>Another feature of AI agents next to the reviews is the analytics capabilities that come with them.
+In my personal opinion, analytics are important to measure the impact the introduction of such
+tooling has on the software delivery. CodeRabbitAI provides a couple nice dashboards on how much it
+is being used, and what kind of errors it helped uncover.</p>
+
+  <figure class="center" >
+    <div class="zoomable-image-container">
+      <img src="/img/ai-agents/activity-dashboard.png" style="border-radius: 8px;" decoding="async" loading="lazy"/>
+    </div>
+    
+      <figcaption class="center" style="font-weight: bold; font-style: italic;"><p>Activity dashboard showing engagment with CodeRabbitAI</p>
+</figcaption>
+    
+  </figure>
+
+
+  <figure class="center" >
+    <div class="zoomable-image-container">
+      <img src="/img/ai-agents/adoption-dashboard.png" style="border-radius: 8px;" decoding="async" loading="lazy"/>
+    </div>
+    
+      <figcaption class="center" style="font-weight: bold; font-style: italic;"><p>Dashboard showing overall adoption of CodeRabbitAI on the projects</p>
+</figcaption>
+    
+  </figure>
+
+
+  <figure class="center" >
+    <div class="zoomable-image-container">
+      <img src="/img/ai-agents/findings-dashboard.png" style="border-radius: 8px;" decoding="async" loading="lazy"/>
+    </div>
+    
+      <figcaption class="center" style="font-weight: bold; font-style: italic;"><p>Findings dashboard showing errors and suggestions by type</p>
+</figcaption>
+    
+  </figure>
+
+<p>I did not try out CodeRabbitAI for long enough to have any meaningful metrics, but I am confident
+that the capabilities provided are enough to get a decent understanding of the quality of adoption.</p>
+<p>Moreover, CodeRabbitAI supports reporting. This allows to generate reports based on natural language
+prompts that could be useful for product owners to get insights of changes made to the software over
+the course of a sprint.</p>
+<h1 id="verdict">Verdict</h1>
+<p>While this whole article might seem like a slight rant against such tools, I would in fact wish I
+could use such tools at work. Not as a replacement for human reviewers, but as an addition to them.
+For instance, the quite verbose walkthroughs CodeRabbitAI provides can be a very helpful entrypoint
+to a human reviewer on larger PRs. Moreover, while the quality of the review is insufficient for
+projects where quality matters, having near instant feedback is amazing.</p>
+<p>Finally, as mentioned above, I believe one major selling point of such agents is in the way we
+humans interact with them. Even if the agent might do little more than execute linters or similar in
+the background, having the output of these tools in natural language directly as comments in the PRs
+is not to be underestimated. This is especially true in the age where more and more responsibility
+is being shifted to developers. With DevSecOps, developers have to understand and act upon the
+output of all kinds of tools. Presenting this output in a more understandable format, potentially
+enriched with explanations, can have a significant impact.</p>
+<p>Therefore, as a final word, I would actually encourage people to explore such agents to augment
+their workflow <strong>safely</strong>, albeit with caution and a clear understanding of their <strong>limitations</strong>.</p>
+
+        </div>
+
+        
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h">Thanks for reading! Read other posts?</span>
+                    <hr />
+                </div>
+                <div class="pagination__buttons">
+                        <span class="button previous">
+                            <a href="https://f4z3r.github.io/a-comprehensive-guide-to-managing-large-scale-infrastructure-with-gitops/">
+                                <span class="button__icon">←</span>&nbsp;
+                                <span class="button__text">A Comprehensive Guide to Managing Large Scale Infrastructure with GitOps</span>
+                            </a>
+                        </span>
+                    
+                    
+                        <span class="button next">
+                            <a href="https://f4z3r.github.io/dissecting-kubewarden-internals-built-comparison/">
+                                <span class="button__text">Dissecting Kubewarden: Internals, How It&#x27;s Built, and Its Place Among Policy Engines</span>&nbsp;
+                                <span class="button__icon">→</span>
+                            </a>
+                        </span>
+                    </div>
+            </div>
+        
+       <div class="pagination">
+         <div class="pagination__title">
+           <span class="pagination__title-h">Comment Section</span>
+           <hr />
+         </div>
+       </div>
+
+      <div class="giscus comments"></div>
+      <script src="https://giscus.app/client.js"
+        data-repo="f4z3r/f4z3r.github.io"
+        data-repo-id="R_kgDON5I2cQ"
+        data-category="Ideas"
+        data-category-id="DIC_kwDON5I2cc4Cm_yp"
+        data-mapping="og:title"
+        data-strict="1"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="gruvbox_dark"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </div>
+
+    </div>
+
+    
+    <footer class="footer">
+        <div class="footer__inner">
+                <div class="copyright">
+                        <span>© 
+    2026
+ Jakob Beckmann</span>
+                    <span class="copyright-theme">
+                        <span class="copyright-theme-sep">:: </span>
+                        This work is licenced under <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.en">CC BY-SA 4.0</a>
+                    </span>
+                </div>
+            </div>
+    </footer>
+    
+
+</div>
+<div id="fullpage" style="display: none;">
+  <span class="close-btn">&times;</span>
+  <img id="fullscreen-image" src="" alt="">
+</div>
+<script src="https://f4z3r.github.io/js/zoomable-images.js"></script>
+</body>
+
+</html>

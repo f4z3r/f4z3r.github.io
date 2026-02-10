@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>A Comprehensive Guide to Managing Large Scale Infrastructure with GitOps | f4z3r&#x27;s blog</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://f4z3r.github.io/style.css">
+    <link rel="stylesheet" href="https://f4z3r.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://f4z3r.github.io/color/background_dark.css">
+    
+    <link rel="stylesheet" href="https://f4z3r.github.io/font-hack-subset.css">
+
+    <meta name="description" content="">
+
+    <meta property="og:description" content="">
+    <meta property="og:title" content="A Comprehensive Guide to Managing Large Scale Infrastructure with GitOps | f4z3r's blog">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://f4z3r.github.io/a-comprehensive-guide-to-managing-large-scale-infrastructure-with-gitops/">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:title" content="A Comprehensive Guide to Managing Large Scale Infrastructure with GitOps | f4z3r's blog">
+    <meta property="twitter:domain" content="f4z3r.github.io">
+    <meta property="twitter:url" content="https://f4z3r.github.io/a-comprehensive-guide-to-managing-large-scale-infrastructure-with-gitops/">
+
+                <link rel="alternate" type="application/rss+xml" title="f4z3r&#x27;s blog RSS Feed" href="https://f4z3r.github.io/rss.xml" />
+                <link rel="alternate" type="application/atom+xml" title="f4z3r&#x27;s blog Atom Feed" href="https://f4z3r.github.io/atom.xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+</head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://f4z3r.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            f4z3r&#x27;s blog
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://f4z3r.github.io">blog</a></li>
+            
+                <li><a href="https://f4z3r.github.io/tags">tags</a></li>
+            
+                <li><a href="https://f4z3r.github.io/about">about me</a></li>
+            
+                <li><a href="https://github.com/f4z3r/" target="_blank" rel="noopener noreferrer">github</a></li>
+            
+                <li><a href="https://www.linkedin.com/in/jakob-beckmann/" target="_blank" rel="noopener noreferrer">linkedin</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://f4z3r.github.io/a-comprehensive-guide-to-managing-large-scale-infrastructure-with-gitops/">A Comprehensive Guide to Managing Large Scale Infrastructure with GitOps</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-03-30
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/gitops/">#gitops</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/platform-engineering/">#platform-engineering</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/sre/">#sre</a></span>
+    
+
+        <div class="post-content">
+            
+  
+  
+    
+    
+  
+  <div style="overflow:hidden;width:100%;height:300px;">
+    <img src="https://f4z3r.github.io/img/gitops-intro/old-wooden-trading-ship.jpeg" alt="An old wooden trading ship navigating the wide ocean" class="center" style="margin:-30% 0" decoding="async" loading="lazy"/>
+  </div>
+
+
+<!--
+vim: ft=liquid
+-->
+<p>GitOps is getting adopted more and more. However, there still seems to be some confusion as to what
+GitOps is, how it differs from regular CI/CD pipelines, and how to best adopt it. In this post we
+will quickly cover what GitOps is, and the three main lessons learned from using GitOps to manage
+infrastructure at scale both on premise and in the cloud.</p>
+<span id="continue-reading"></span><h1 id="gitops-overview">GitOps Overview</h1>
+<p>GitOps is a set of principles enabling the operation of a system via version controlled, declarative
+configuration. More specifically, the <a rel="noopener nofollow noreferrer external" target="_blank" href="https://opengitops.dev/">OpenGitOps</a> project defines four
+principles which define whether a system or set of systems is managed via GitOps:</p>
+<ul>
+<li>Declarative: A system managed by GitOps must have its desired state expressed declaratively.</li>
+<li>Versioned and Immutable: Desired state is stored in a way that enforces immutability, versioning
+and retains a complete version history.</li>
+<li>Pulled Automatically: Software agents automatically pull the desired state declarations from the
+source.</li>
+<li>Continuously Reconciled: Software agents continuously observe actual system state and attempt to
+apply the desired state.</li>
+</ul>
+<p>Note that <code>git</code> is not referenced anywhere, as GitOps is not bound to any tooling. However, in
+layman terms, many consider a system operated via <code>git</code> to be a GitOps system. This is not quite
+correct.</p>
+<h1 id="gitops-is-more-than-ci-cd-pipelines">GitOps is More than CI/CD Pipelines</h1>
+<p>Taking the "layman's definition" from above, any system that has CI/CD via pipelines triggered on
+repository changes would be a GitOps system. This is not accurate. Consider an IaC pipeline which
+applies declaratively defined infrastructure (such as a standard <code>opentofu apply</code> in a pipeline, or
+a Docker build followed by a <code>kubectl apply</code>). While such a system adheres to the first two
+principles, it does not adhere to the latter two. This implies that changes made to the target
+system are not corrected (reconciled) until the pipeline runs the next time. Similarly, if the
+pipeline fails for whatever reason, the desired state does not change the pipeline: a configuration
+drift is not detected, even if not reconciled.</p>
+<p>This is an important distinction when considering "standard CI/CD" and GitOps. Simply having
+something declared as code does not make it GitOps.</p>
+<h1 id="the-advantages-of-gitops">The Advantages of GitOps</h1>
+<p>GitOps has many advantages over standard ways of managing systems. The advantages of having a
+declarative desired state, version controlling it, and interacting with the system only via <code>git</code>
+(or whatever version control system you use) are tremendous. From improved security and higher
+efficiency to better change visibility. These are well known to most people and will thus not be
+covered here.</p>
+<p>Drift detection and automatic reconciliation are the two other aspects that make GitOps absolutely
+amazing. This is especially true in the current day and age, with the proliferation of complex
+systems being worked on by many people concurrently. Being able to observe that the system is not in
+the desired state has massive advantages, such as for standard SRE operations. Continuous
+reconciliation ensures that manual operational tasks are kept to a minimum, and that systems cannot
+degrade over time as small undesired changes creep in.</p>
+<h1 id="tooling">Tooling</h1>
+<p>In this post we will mostly focus on using GitOps to manage resources handled via the Kubernetes
+API, but it should be noted that GitOps as a concept is in no way restricted to Kubernetes. In the
+Kubernetes space there are two major players for GitOps: <a rel="noopener nofollow noreferrer external" target="_blank" href="https://argoproj.github.io/cd/">ArgoCD</a>
+and <a rel="noopener nofollow noreferrer external" target="_blank" href="https://fluxcd.io/">FluxCD</a>. We will not go into the details as to what the advantages for each
+tool are, other than saying that according to our own experience, ArgoCD might be more developer
+focused, while FluxCD might suit platform engineers with more Kubernetes experience that want more
+flexibility.</p>
+<p>The rest of this post is tool agnostic and everything we are talking about can be done with either
+tool (but some aspects might be easier to do with one or the other).</p>
+<h1 id="infrastructure-disambiguation">Infrastructure: Disambiguation</h1>
+<p>Before we dive into how to structure your GitOps configuration, it might make sense to draw a line
+as to where infrastructure starts and where it ends. We consider infrastructure everything that is
+part of the platform provided to an application team. Hence this line might vary depending on the
+maturity of the platform you provide your teams. If we consider a simple Kubernetes platform with
+little additional abstraction for its users, the infrastructure would contain the Kubernetes
+platform itself as well as all system components that are shared between the teams, such as a
+central monitoring stack, a central credential management solution, centralized policy enforcement
+of specific Kubernetes resources, and the like.</p>
+<p>The lower end of the spectrum will likely not be managed by GitOps. That is simply because the
+GitOps tooling itself typically needs to run somewhere, and also needs to be bootstrapped somehow.
+Some tools such as FluxCD allow the GitOps controller to manage itself, but even in these cases the
+runtime for the controller needs to exist when the controller is initially installed, and is thus
+typically not part of the GitOps configuration.</p>
+<p>Now that this is cleared up, let us consider how the configuration should be managed.</p>
+<h1 id="app-of-apps">App-of-Apps</h1>
+<p>A very popular pattern for managing configuration via GitOps is the "app-of-apps" pattern. This was
+popularized by ArgoCD, but is also applicable to other tooling. We will use ArgoCD in the example
+below, but the same can be implemented using FluxCD Kustomizations.</p>
+<p>Let us consider a component from our infrastructure that we want to manage via GitOps. Typically, we
+would need to tell the GitOps controller how to manage this component. For instance, let us assume
+the component is installed via raw Kubernetes manifests. Then we would tell the GitOps controller
+which repository contains these manifests and in which namespace to install them. Depending on the
+controller you are using, you might also configure additional parameters such as how often it should
+be reconciled, whether it depends on other components, and so on. In ArgoCD jargon this would be an
+"Application" (the root of "app-of-apps" naming), and would look as follows:</p>
+<pre class="giallo" style="color: #EBDBB2; background-color: #282828;"><code data-lang="yaml"><span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 1</span><span style="color: #8EC07C;">apiVersion</span><span style="color: #A89984;">:</span><span style="color: #B8BB26;"> argoproj.io/v1alpha1</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 2</span><span style="color: #8EC07C;">kind</span><span style="color: #A89984;">:</span><span style="color: #B8BB26;"> Application</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 3</span><span style="color: #8EC07C;">metadata</span><span style="color: #A89984;">:</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 4</span><span style="color: #8EC07C;">  name</span><span style="color: #A89984;">:</span><span style="color: #B8BB26;"> sealed-secrets</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 5</span><span style="color: #8EC07C;">  namespace</span><span style="color: #A89984;">:</span><span style="color: #B8BB26;"> argocd</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 6</span><span style="color: #8EC07C;">spec</span><span style="color: #A89984;">:</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 7</span><span style="color: #8EC07C;">  project</span><span style="color: #A89984;">:</span><span style="color: #B8BB26;"> default</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 8</span><span style="color: #8EC07C;">  source</span><span style="color: #A89984;">:</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 9</span><span style="color: #8EC07C;">    chart</span><span style="color: #A89984;">:</span><span style="color: #B8BB26;"> sealed-secrets</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">10</span><span style="color: #8EC07C;">    repoURL</span><span style="color: #A89984;">:</span><span style="color: #B8BB26;"> https://bitnami-labs.github.io/sealed-secrets</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">11</span><span style="color: #8EC07C;">    targetRevision</span><span style="color: #A89984;">:</span><span style="color: #D3869B;"> 1.16.1</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">12</span><span style="color: #8EC07C;">    helm</span><span style="color: #A89984;">:</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">13</span><span style="color: #8EC07C;">      releaseName</span><span style="color: #A89984;">:</span><span style="color: #B8BB26;"> sealed-secrets</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">14</span><span style="color: #8EC07C;">  destination</span><span style="color: #A89984;">:</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">15</span><span style="color: #8EC07C;">    server</span><span style="color: #A89984;">: &quot;</span><span style="color: #B8BB26;">https://kubernetes.default.svc</span><span style="color: #A89984;">&quot;</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">16</span><span style="color: #8EC07C;">    namespace</span><span style="color: #A89984;">:</span><span style="color: #B8BB26;"> kubeseal</span></span></code></pre>
+<p>You would then apply this <code>Application</code> resource to Kubernetes. Your component would then be managed
+by GitOps, as any changes you push to the manifests repository would be reflected on the Kubernetes
+cluster.</p>
+<p>Then a second infrastructure component needs to be installed, and you repeat the process. The result
+would be a second <code>Application</code> which installs and manages a component. You might also want to
+version your deployment (such as using version <code>1.16.1</code> of the Helm chart). This implies that
+lifecycles require a change to this <code>Application</code> manifest, and thus a call against the Kubernetes
+API to edit it.</p>
+<p>The end result is a set of <code>Application</code> resources, some of which you periodically modify when
+lifecycling a component. Now imagine you need to deploy your infrastructure elsewhere (for instance
+a second Kubernetes cluster in our example), or maybe even a couple dozen times. Then you need to
+manage this entire set of <code>Application</code> resources on every platform. A better approach is to add an
+abstraction layer, which itself deploys the <code>Application</code> resources via GitOps. Hence you put all
+your <code>Application</code> resources into a repository, and define another, "higher level" <code>Application</code>
+which deploys this repository. This means that when deploying to new platforms, you only need to
+deploy that one "higher level" <code>Application</code>, and any changes to the component <code>Application</code>
+resources can be made via Git, conforming to our GitOps approach. This "higher level" <code>Application</code>
+is only there to deploy the component <code>Application</code>s thus the name "app-of-apps". Visually, you thus
+have the following structure:</p>
+
+  
+  
+    
+    
+  
+  <div class="zoomable-image-container">
+    <img src="https://f4z3r.github.io/img/gitops-intro/app-of-apps.excalidraw.svg" alt="Visual representation of app-of-apps pattern" class="center" style="border-radius: 8px;" decoding="async" loading="lazy"/>
+  </div>
+
+<p>It should be noted that this also massively helps when customizing platforms. Typically, components
+cannot be deployed truly one-to-one in several places, but require slight configuration differences.
+Consider for instance hostnames for UIs of your components. Two of these components deployed in
+different locations cannot share the same hostname and routing. Using an "app-of-apps" approach
+allows you to define variables on the top level application, and inject these into the downstream
+applications such that they can slightly adapt the way they are installed. We will not dive deeper
+into how this is done as it is highly dependent on the tooling you use (ArgoCD uses
+<code>ApplicationSet</code>, FluxCD uses variable substitution), but know this is enabled by such an approach.</p>
+<h1 id="consolidating-your-configuration">Consolidating your Configuration</h1>
+<p>In the organisation I first used GitOps at scale, we deployed all our components as Helm charts to a
+Kubernetes cluster. Each component was essentially contained within two different repositories in
+our version control system:</p>
+<ol>
+<li>the source code repository which typically built a Docker image as an artefact</li>
+<li>the Helm chart definition which referenced the Docker image from above</li>
+</ol>
+<p>When we then introduced GitOps, we decided to add a third repository containing the exact deployment
+definition (in our case the <code>Application</code> declarations) for the component. Using the app-of-apps
+pattern from above, we could then reference each of these "GitOps repositories" and deploy specific
+overlays (customizations) of the <code>Application</code> to specific platforms. This worked well for quite
+some time. However, with time the number of components we managed increased, and so did the number
+of target platforms to which these components needed to be deployed. This lead to quite a few
+issues.</p>
+<p>When a new target platform was introduced, all such "GitOps repositories" needed to be updated to
+contain a new overlay customizing the <code>Application</code> to the specific platform. This is very tedious
+when you have several dozen such repositories.</p>
+<p>Moreover, components had dependencies to other components. This meant that we were referencing
+components within a repository that were defined in another repository. While not problematic in
+itself, this can become very tricky when one component has a dependency on a configuration value of
+another component. The configuration value is then duplicated in both repositories and becomes
+difficult to maintain. While this sounds like we did not properly separate the components, it is
+very common to see such cases in infrastructure configurations. Consider for instance a deployment
+of an ingress controller which defines a hostname suffix for its routes. All components deployed on
+the same Kubernetes platform that deploy a route/ingress will need to use exactly that hostname
+suffix in order to have valid routing.</p>
+<p>The above issue also results in tricky situations when configurations need to be changed for
+components that are dependent on one another. If the deployment configuration is separated into
+different repositories, PRs to these repositories need to be synchronized to ensure the deployment
+occurs at the same time.</p>
+<p>Finally, distributing the deployment configuration over so many repositories meant that it became
+increasingly difficult to have an overview of what is deployed on a target platform. One would need
+to navigate through dozens of repositories to check this is correctly done.</p>
+<p>After identifying these issues we decided to move all our configuration into a single repository.
+This repository would then contain a templated definition of the entire set of components which
+would need to be deployed. A set of platform definitions within the same repository would then feed
+values to templates to ensure consistent configuration. This massively helped us with to address the
+issues mentioned above. On top of that, it allows to version the "template" and thus enables
+rollouts of a versioned infrastructure layer. You can find an example repository of such a structure
+designed with FluxCD here: <a rel="noopener nofollow noreferrer external" target="_blank" href="https://github.com/f4z3r/flux-demo">FluxCD Monorepo Demo</a>.</p>
+
+  
+  
+    
+    
+  
+  <div class="zoomable-image-container">
+    <img src="https://f4z3r.github.io/img/gitops-intro/app-of-apps-monorepo.excalidraw.svg" alt="Visual representation of app-of-apps pattern" class="center" style="border-radius: 8px;" decoding="async" loading="lazy"/>
+  </div>
+
+<h1 id="gitops-bridge">Gitops Bridge</h1>
+<p>The last challenge we want to address in this blog post is a concept called a "GitOps bridge". In
+public cloud environments, there is typically a relatively strong cut between infrastructure
+deployed via Terraform (or any similar tool), and the infrastructure deployed via GitOps. For
+instance, one might deploy an Azure Kubernetes Service and some surrounding services (such as the
+required network, a container registry, etc) via Terraform, and them deploy components and
+applications within the AKS using GitOps. The issue that we face here is that the GitOps
+configuration very often depends on the Terraform configuration. Consider for instance the container
+registry. Its address is set up by Terraform, but is used in every image declaration in the GitOps
+configuration. One option is to duplicate such values in the respective configurations, while
+another option is to use a GitOps bridge.</p>
+<p>The GitOps bridge is an abstract concept on how to pass configuration values from tooling such as
+Terraform as inputs to the GitOps configuration. How this is done in practice very much depends on
+which tools you use. For instance, if looking at Terraform and FluxCD, a common way to achieve this
+is to have Terraform write a ConfigMap onto the AKS where the FluxCD controller will run containing
+all variables (and their values) that will be required by the GitOps configuration. The FluxCD
+controller then supports injecting variables from a ConfigMap via
+<a rel="noopener nofollow noreferrer external" target="_blank" href="https://fluxcd.io/flux/components/kustomize/kustomizations/#post-build-variable-substitution">variable substitution</a>.</p>
+<p>Using a GitOps bridge has the advantage that changes in the Terraform configurations are much less
+likely to break the GitOps configuration that builds on top of it. Moreover, it allows Terraform to
+directly bootstrap the entire GitOps setup when creating new platforms without the need to manually
+redefine the required variables in the GitOps repository.</p>
+<h1 id="summary">Summary</h1>
+<p>So, to recap, we have looked at what GitOps really is (and isn't). Understanding these basics is
+critical to correctly implement GitOps in your projects. On top of that, we looked at three best
+practices:</p>
+<ol>
+<li>Use an app-of-apps pattern to improve resiliency for when you need to recreate platforms.</li>
+<li>Consider using a mono-repository for all your GitOps configuration as your setup grows.</li>
+<li>Have a look at GitOps bridges to improve the automation when setting up platforms and ensuring
+your Terraform and GitOps configurations are consistent.</li>
+</ol>
+<p>I hope this has helped you understand a bit better how to use GitOps at scale. If you have any
+questions or comments, feel free to let me know below.</p>
+
+        </div>
+
+        
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h">Thanks for reading! Read other posts?</span>
+                    <hr />
+                </div>
+                <div class="pagination__buttons">
+                        <span class="button previous">
+                            <a href="https://f4z3r.github.io/a-very-deep-dive-into-docker-builds/">
+                                <span class="button__icon">←</span>&nbsp;
+                                <span class="button__text">A Very Deep Dive Into Docker Builds</span>
+                            </a>
+                        </span>
+                    
+                    
+                        <span class="button next">
+                            <a href="https://f4z3r.github.io/the-tortoise-and-the-hare-do-ai-agents-really-help/">
+                                <span class="button__text">The Tortoise and the Hare: do AI Agents Really Help for Software Development?</span>&nbsp;
+                                <span class="button__icon">→</span>
+                            </a>
+                        </span>
+                    </div>
+            </div>
+        
+       <div class="pagination">
+         <div class="pagination__title">
+           <span class="pagination__title-h">Comment Section</span>
+           <hr />
+         </div>
+       </div>
+
+      <div class="giscus comments"></div>
+      <script src="https://giscus.app/client.js"
+        data-repo="f4z3r/f4z3r.github.io"
+        data-repo-id="R_kgDON5I2cQ"
+        data-category="Ideas"
+        data-category-id="DIC_kwDON5I2cc4Cm_yp"
+        data-mapping="og:title"
+        data-strict="1"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="gruvbox_dark"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </div>
+
+    </div>
+
+    
+    <footer class="footer">
+        <div class="footer__inner">
+                <div class="copyright">
+                        <span>© 
+    2026
+ Jakob Beckmann</span>
+                    <span class="copyright-theme">
+                        <span class="copyright-theme-sep">:: </span>
+                        This work is licenced under <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.en">CC BY-SA 4.0</a>
+                    </span>
+                </div>
+            </div>
+    </footer>
+    
+
+</div>
+<div id="fullpage" style="display: none;">
+  <span class="close-btn">&times;</span>
+  <img id="fullscreen-image" src="" alt="">
+</div>
+<script src="https://f4z3r.github.io/js/zoomable-images.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>f4z3r&#x27;s blog</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://f4z3r.github.io/style.css">
+    <link rel="stylesheet" href="https://f4z3r.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://f4z3r.github.io/color/background_dark.css">
+    
+    <link rel="stylesheet" href="https://f4z3r.github.io/font-hack-subset.css">
+
+    <meta name="description" content="">
+
+    <meta property="og:description" content="">
+    <meta property="og:title" content="f4z3r's blog">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://f4z3r.github.io/">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:title" content="f4z3r's blog">
+    <meta property="twitter:domain" content="f4z3r.github.io">
+    <meta property="twitter:url" content="https://f4z3r.github.io/">
+
+                <link rel="alternate" type="application/rss+xml" title="f4z3r&#x27;s blog RSS Feed" href="https://f4z3r.github.io/rss.xml" />
+                <link rel="alternate" type="application/atom+xml" title="f4z3r&#x27;s blog Atom Feed" href="https://f4z3r.github.io/atom.xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+</head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://f4z3r.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            f4z3r&#x27;s blog
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://f4z3r.github.io">blog</a></li>
+            
+                <li><a href="https://f4z3r.github.io/tags">tags</a></li>
+            
+                <li><a href="https://f4z3r.github.io/about">about me</a></li>
+            
+                <li><a href="https://github.com/f4z3r/" target="_blank" rel="noopener noreferrer">github</a></li>
+            
+                <li><a href="https://www.linkedin.com/in/jakob-beckmann/" target="_blank" rel="noopener noreferrer">linkedin</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+        <div class="posts">
+                <div class="post on-list">
+                    
+    <h1 class="post-title"><a href="https://f4z3r.github.io/beyond-the-pod-webassembly-and-wasmcloud-next-platform-evolution/">Beyond the Pod: Why wasmCloud and WebAssembly Might Be the Next Evolution of the Platform</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-10-09
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/cloud/">#cloud</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/kubernetes/">#kubernetes</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/rust/">#rust</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/wasm/">#wasm</a></span>
+    
+
+
+                    
+        <div class="post-content">
+            
+  
+  
+    
+    
+  
+  <div style="overflow:hidden;width:100%;height:300px;">
+    <img src="https://f4z3r.github.io/img/wasmcloud/assembly-line.jpeg" alt="An assembly line with robot arms." class="center" style="margin:-7% 0" decoding="async" loading="lazy"/>
+  </div>
+
+
+<!--
+vim: ft=liquid
+-->
+<p>Over the past few months I have invested some time to contribute to an open source project I find
+fascinating: <a rel="noopener nofollow noreferrer external" target="_blank" href="https://wasmcloud.com/">wasmCloud</a>. As a platform engineer and architect, I am very
+familiar with how software platforms are typically built in practice. However, with the ubiquity of
+Kubernetes, you run the risk to being stuck in the "doing it the Kubernetes way" line of thinking.
+But then again, are there any better ways? This is where wasmCloud caught my attention. A modern
+platform building on proven concepts from Kubernetes, but with some significant differences. In this
+article I want to introduce wasmCloud, how it compares to Kubernetes, what its internal architecture
+looks like, and what ideas are, in my humble opinion, a step up from "the Kubernetes way of things".</p>
+        </div>
+        <div>
+            <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
+            <a class="read-more button" href="https://f4z3r.github.io/beyond-the-pod-webassembly-and-wasmcloud-next-platform-evolution/">
+                <span class="button__text">Read more</span>&nbsp;
+                <span class="button__icon">&#8617;&#xFE0E;</span>
+            </a>
+        </div>
+    
+
+                </div>
+            
+                <div class="post on-list">
+                    
+    <h1 class="post-title"><a href="https://f4z3r.github.io/dissecting-kubewarden-internals-built-comparison/">Dissecting Kubewarden: Internals, How It&#x27;s Built, and Its Place Among Policy Engines</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-05-03
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/kubernetes/">#kubernetes</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/platform-engineering/">#platform-engineering</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/security/">#security</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/sre/">#sre</a></span>
+    
+
+
+                    
+        <div class="post-content">
+            
+  
+  
+    
+    
+  
+  <div style="overflow:hidden;width:100%;height:300px;">
+    <img src="https://f4z3r.github.io/img/kubewarden/knight.jpeg" alt="A knight in armor striding forward with his sword drawn." class="center" style="margin:-15% 0" decoding="async" loading="lazy"/>
+  </div>
+
+
+<!--
+vim: ft=liquid
+-->
+<p>Kubernetes offers amazing capabilities to improve compute density compared to older runtimes such as
+virtual machines. However, in oder to leverage the capabilities of the platform, these tend to host
+applications from various tenants. This introduces a strong need for properly crafted controls and
+well-defined compliance to ensure the tenants use the platform correctly and do not affect one
+another. The RBAC capabilities provided out of the box by Kubernetes are quickly insufficient to
+address this need. This is where policy engines such as <a rel="noopener nofollow noreferrer external" target="_blank" href="https://www.kubewarden.io/">Kubewarden</a>
+come into play. In this post we will look at how Kubewarden can be leveraged to ensure correct usage
+of a platform, how it compares to other policy engines, and how to best adopt it.</p>
+        </div>
+        <div>
+            <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
+            <a class="read-more button" href="https://f4z3r.github.io/dissecting-kubewarden-internals-built-comparison/">
+                <span class="button__text">Read more</span>&nbsp;
+                <span class="button__icon">&#8617;&#xFE0E;</span>
+            </a>
+        </div>
+    
+
+                </div>
+            
+                <div class="post on-list">
+                    
+    <h1 class="post-title"><a href="https://f4z3r.github.io/the-tortoise-and-the-hare-do-ai-agents-really-help/">The Tortoise and the Hare: do AI Agents Really Help for Software Development?</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-04-19
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/ai/">#ai</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/devex/">#devex</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/devops/">#devops</a></span>
+    
+
+
+                    
+        <div class="post-content">
+            
+  
+  
+    
+    
+  
+  <div style="overflow:hidden;width:100%;height:300px;">
+    <img src="https://f4z3r.github.io/img/ai-agents/robot-ai.jpeg" alt="A robot working on a computer writing code." class="center" style="margin:-20% 0" decoding="async" loading="lazy"/>
+  </div>
+
+
+<!--
+vim: ft=liquid
+-->
+<p>Making my development workflow as fast as possible is a big passion of mine. From customizing my
+development setup to get the last inkling of efficiency out of it, to thinking how to manage notes
+and knowledge resources to access them as quickly as possible. With the sudden ubiquity of AI in
+development tools, I came to wonder how AI could help me write code faster. Being quite the skeptic
+when it comes to AI actually generating code for me (using tools such as Cursor or GitHub Copilot),
+I came to investigate AI agents which specialise in code reviews. In this blog post I will share my
+experience using such an agent on a real world case. I will explore where such agents shine and
+where they are severely lacking.</p>
+        </div>
+        <div>
+            <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
+            <a class="read-more button" href="https://f4z3r.github.io/the-tortoise-and-the-hare-do-ai-agents-really-help/">
+                <span class="button__text">Read more</span>&nbsp;
+                <span class="button__icon">&#8617;&#xFE0E;</span>
+            </a>
+        </div>
+    
+
+                </div>
+            
+                <div class="post on-list">
+                    
+    <h1 class="post-title"><a href="https://f4z3r.github.io/a-comprehensive-guide-to-managing-large-scale-infrastructure-with-gitops/">A Comprehensive Guide to Managing Large Scale Infrastructure with GitOps</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2025-03-30
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/gitops/">#gitops</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/platform-engineering/">#platform-engineering</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/sre/">#sre</a></span>
+    
+
+
+                    
+        <div class="post-content">
+            
+  
+  
+    
+    
+  
+  <div style="overflow:hidden;width:100%;height:300px;">
+    <img src="https://f4z3r.github.io/img/gitops-intro/old-wooden-trading-ship.jpeg" alt="An old wooden trading ship navigating the wide ocean" class="center" style="margin:-30% 0" decoding="async" loading="lazy"/>
+  </div>
+
+
+<!--
+vim: ft=liquid
+-->
+<p>GitOps is getting adopted more and more. However, there still seems to be some confusion as to what
+GitOps is, how it differs from regular CI/CD pipelines, and how to best adopt it. In this post we
+will quickly cover what GitOps is, and the three main lessons learned from using GitOps to manage
+infrastructure at scale both on premise and in the cloud.</p>
+        </div>
+        <div>
+            <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
+            <a class="read-more button" href="https://f4z3r.github.io/a-comprehensive-guide-to-managing-large-scale-infrastructure-with-gitops/">
+                <span class="button__text">Read more</span>&nbsp;
+                <span class="button__icon">&#8617;&#xFE0E;</span>
+            </a>
+        </div>
+    
+
+                </div>
+            
+                <div class="post on-list">
+                    
+    <h1 class="post-title"><a href="https://f4z3r.github.io/a-very-deep-dive-into-docker-builds/">A Very Deep Dive Into Docker Builds</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2024-11-26
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/docker/">#docker</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/python/">#python</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/security/">#security</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/sre/">#sre</a></span>
+    
+
+
+                    
+        <div class="post-content">
+            
+  
+  
+    
+    
+  
+  <div style="overflow:hidden;width:100%;height:300px;">
+    <img src="https://f4z3r.github.io/img/docker-builds/diver.jpeg" alt="A man diving deep into the depths of the sea." class="center" style="margin:-25% 0" decoding="async" loading="lazy"/>
+  </div>
+
+
+<!--
+vim: ft=liquid
+-->
+<p>Containers are everywhere. From Kubernetes for orchestrating deployments and simplifing operations
+to Dev Containers for flexible yet reproducible development environments. Yet, while they are
+ubiquitous, images are often built sub-optimally. In this post we will be looking at a full example
+of a Docker build for a Python application and what best practices to consider.</p>
+        </div>
+        <div>
+            <!-- &#xFE0E; -- force text style - some devices render this as emoji -->
+            <a class="read-more button" href="https://f4z3r.github.io/a-very-deep-dive-into-docker-builds/">
+                <span class="button__text">Read more</span>&nbsp;
+                <span class="button__icon">&#8617;&#xFE0E;</span>
+            </a>
+        </div>
+    
+
+                </div>
+            <div class="pagination">
+                <div class="pagination__buttons"></div>
+            </div>
+        </div>
+        
+    </div>
+
+    
+    <footer class="footer">
+        <div class="footer__inner">
+                <div class="copyright">
+                        <span>© 
+    2026
+ Jakob Beckmann</span>
+                    <span class="copyright-theme">
+                        <span class="copyright-theme-sep">:: </span>
+                        This work is licenced under <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.en">CC BY-SA 4.0</a>
+                    </span>
+                </div>
+            </div>
+    </footer>
+    
+
+</div>
+<div id="fullpage" style="display: none;">
+  <span class="close-btn">&times;</span>
+  <img id="fullscreen-image" src="" alt="">
+</div>
+<script src="https://f4z3r.github.io/js/zoomable-images.js"></script>
+</body>
+
+</html>

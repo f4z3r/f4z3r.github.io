@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>f4z3r&#x27;s blog</title>
+    <link rel="self" type="application/atom+xml" href="https://f4z3r.github.io/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://f4z3r.github.io"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-10-09T00:00:00+00:00</updated>
+    <id>https://f4z3r.github.io/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Beyond the Pod: Why wasmCloud and WebAssembly Might Be the Next Evolution of the Platform</title>
+        <published>2025-10-09T00:00:00+00:00</published>
+        <updated>2025-10-09T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://f4z3r.github.io/beyond-the-pod-webassembly-and-wasmcloud-next-platform-evolution/"/>
+        <id>https://f4z3r.github.io/beyond-the-pod-webassembly-and-wasmcloud-next-platform-evolution/</id>
+        
+        <summary type="html">
+  
+  
+    
+    
+  
+  &lt;div style=&quot;overflow:hidden;width:100%;height:300px;&quot;&gt;
+    &lt;img src=&quot;https:&#x2F;&#x2F;f4z3r.github.io&#x2F;img&#x2F;wasmcloud&#x2F;assembly-line.jpeg&quot; alt=&quot;An assembly line with robot arms.&quot; class=&quot;center&quot; style=&quot;margin:-7% 0&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot;&#x2F;&gt;
+  &lt;&#x2F;div&gt;
+
+
+&lt;!--
+vim: ft=liquid
+--&gt;
+&lt;p&gt;Over the past few months I have invested some time to contribute to an open source project I find
+fascinating: &lt;a rel=&quot;noopener nofollow noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;wasmcloud.com&#x2F;&quot;&gt;wasmCloud&lt;&#x2F;a&gt;. As a platform engineer and architect, I am very
+familiar with how software platforms are typically built in practice. However, with the ubiquity of
+Kubernetes, you run the risk to being stuck in the &quot;doing it the Kubernetes way&quot; line of thinking.
+But then again, are there any better ways? This is where wasmCloud caught my attention. A modern
+platform building on proven concepts from Kubernetes, but with some significant differences. In this
+article I want to introduce wasmCloud, how it compares to Kubernetes, what its internal architecture
+looks like, and what ideas are, in my humble opinion, a step up from &quot;the Kubernetes way of things&quot;.&lt;&#x2F;p&gt;</summary>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Dissecting Kubewarden: Internals, How It&#x27;s Built, and Its Place Among Policy Engines</title>
+        <published>2025-05-03T00:00:00+00:00</published>
+        <updated>2025-05-03T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://f4z3r.github.io/dissecting-kubewarden-internals-built-comparison/"/>
+        <id>https://f4z3r.github.io/dissecting-kubewarden-internals-built-comparison/</id>
+        
+        <summary type="html">
+  
+  
+    
+    
+  
+  &lt;div style=&quot;overflow:hidden;width:100%;height:300px;&quot;&gt;
+    &lt;img src=&quot;https:&#x2F;&#x2F;f4z3r.github.io&#x2F;img&#x2F;kubewarden&#x2F;knight.jpeg&quot; alt=&quot;A knight in armor striding forward with his sword drawn.&quot; class=&quot;center&quot; style=&quot;margin:-15% 0&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot;&#x2F;&gt;
+  &lt;&#x2F;div&gt;
+
+
+&lt;!--
+vim: ft=liquid
+--&gt;
+&lt;p&gt;Kubernetes offers amazing capabilities to improve compute density compared to older runtimes such as
+virtual machines. However, in oder to leverage the capabilities of the platform, these tend to host
+applications from various tenants. This introduces a strong need for properly crafted controls and
+well-defined compliance to ensure the tenants use the platform correctly and do not affect one
+another. The RBAC capabilities provided out of the box by Kubernetes are quickly insufficient to
+address this need. This is where policy engines such as &lt;a rel=&quot;noopener nofollow noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.kubewarden.io&#x2F;&quot;&gt;Kubewarden&lt;&#x2F;a&gt;
+come into play. In this post we will look at how Kubewarden can be leveraged to ensure correct usage
+of a platform, how it compares to other policy engines, and how to best adopt it.&lt;&#x2F;p&gt;</summary>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>The Tortoise and the Hare: do AI Agents Really Help for Software Development?</title>
+        <published>2025-04-19T00:00:00+00:00</published>
+        <updated>2025-04-19T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://f4z3r.github.io/the-tortoise-and-the-hare-do-ai-agents-really-help/"/>
+        <id>https://f4z3r.github.io/the-tortoise-and-the-hare-do-ai-agents-really-help/</id>
+        
+        <summary type="html">
+  
+  
+    
+    
+  
+  &lt;div style=&quot;overflow:hidden;width:100%;height:300px;&quot;&gt;
+    &lt;img src=&quot;https:&#x2F;&#x2F;f4z3r.github.io&#x2F;img&#x2F;ai-agents&#x2F;robot-ai.jpeg&quot; alt=&quot;A robot working on a computer writing code.&quot; class=&quot;center&quot; style=&quot;margin:-20% 0&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot;&#x2F;&gt;
+  &lt;&#x2F;div&gt;
+
+
+&lt;!--
+vim: ft=liquid
+--&gt;
+&lt;p&gt;Making my development workflow as fast as possible is a big passion of mine. From customizing my
+development setup to get the last inkling of efficiency out of it, to thinking how to manage notes
+and knowledge resources to access them as quickly as possible. With the sudden ubiquity of AI in
+development tools, I came to wonder how AI could help me write code faster. Being quite the skeptic
+when it comes to AI actually generating code for me (using tools such as Cursor or GitHub Copilot),
+I came to investigate AI agents which specialise in code reviews. In this blog post I will share my
+experience using such an agent on a real world case. I will explore where such agents shine and
+where they are severely lacking.&lt;&#x2F;p&gt;</summary>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>A Comprehensive Guide to Managing Large Scale Infrastructure with GitOps</title>
+        <published>2025-03-30T00:00:00+00:00</published>
+        <updated>2025-03-30T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://f4z3r.github.io/a-comprehensive-guide-to-managing-large-scale-infrastructure-with-gitops/"/>
+        <id>https://f4z3r.github.io/a-comprehensive-guide-to-managing-large-scale-infrastructure-with-gitops/</id>
+        
+        <summary type="html">
+  
+  
+    
+    
+  
+  &lt;div style=&quot;overflow:hidden;width:100%;height:300px;&quot;&gt;
+    &lt;img src=&quot;https:&#x2F;&#x2F;f4z3r.github.io&#x2F;img&#x2F;gitops-intro&#x2F;old-wooden-trading-ship.jpeg&quot; alt=&quot;An old wooden trading ship navigating the wide ocean&quot; class=&quot;center&quot; style=&quot;margin:-30% 0&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot;&#x2F;&gt;
+  &lt;&#x2F;div&gt;
+
+
+&lt;!--
+vim: ft=liquid
+--&gt;
+&lt;p&gt;GitOps is getting adopted more and more. However, there still seems to be some confusion as to what
+GitOps is, how it differs from regular CI&#x2F;CD pipelines, and how to best adopt it. In this post we
+will quickly cover what GitOps is, and the three main lessons learned from using GitOps to manage
+infrastructure at scale both on premise and in the cloud.&lt;&#x2F;p&gt;</summary>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>A Very Deep Dive Into Docker Builds</title>
+        <published>2024-11-26T00:00:00+00:00</published>
+        <updated>2024-11-26T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://f4z3r.github.io/a-very-deep-dive-into-docker-builds/"/>
+        <id>https://f4z3r.github.io/a-very-deep-dive-into-docker-builds/</id>
+        
+        <summary type="html">
+  
+  
+    
+    
+  
+  &lt;div style=&quot;overflow:hidden;width:100%;height:300px;&quot;&gt;
+    &lt;img src=&quot;https:&#x2F;&#x2F;f4z3r.github.io&#x2F;img&#x2F;docker-builds&#x2F;diver.jpeg&quot; alt=&quot;A man diving deep into the depths of the sea.&quot; class=&quot;center&quot; style=&quot;margin:-25% 0&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot;&#x2F;&gt;
+  &lt;&#x2F;div&gt;
+
+
+&lt;!--
+vim: ft=liquid
+--&gt;
+&lt;p&gt;Containers are everywhere. From Kubernetes for orchestrating deployments and simplifing operations
+to Dev Containers for flexible yet reproducible development environments. Yet, while they are
+ubiquitous, images are often built sub-optimally. In this post we will be looking at a full example
+of a Docker build for a Python application and what best practices to consider.&lt;&#x2F;p&gt;</summary>
+        
+    </entry>
+</feed>
