@@ -12,10 +12,10 @@ various programming languages.
 I work on a variety of projects in various roles, such as:
 
 - as a principal software architect at [ipt](https://ipt.ch/en/), working on various mandates.
-- regularly contributing to open source, on projects such as
-  [wasmCloud](https://github.com/wasmCloud/wasmCloud),
-  [HashiCorp Vault](https://github.com/hashicorp/vault), the Kubernetes ecosystem, and various
-  others.
+- regularly contributing to open source. My current focus is on [KCL](https://www.kcl-lang.io/).
+  Previously I have contributed to [wasmCloud](https://wasmcloud.com/),
+  [HashiCorp Vault](https://www.hashicorp.com/en/products/vault), the Kubernetes ecosystem, and
+  various others.
 - maintaining of the [`gruvbox-material.nvim`](https://github.com/f4z3r/gruvbox-material.nvim)
   NeoVim plugin.
 - writing of a couple Lua tools and libraries such as [`sofa`](https://github.com/f4z3r/sofa),
