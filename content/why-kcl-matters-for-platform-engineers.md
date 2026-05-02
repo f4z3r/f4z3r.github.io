@@ -75,7 +75,7 @@ automation on Kubernetes:
 - Constraints on deployed objects are only validated by policy engines running as Kubernetes
   validating webhooks. Developers resort to "test-deploy" resources to see if they pass validation.
 
-Comapring KCL with tranditional YAML validation:
+Comparing KCL with traditional YAML validation:
 
 ## KCL:
 
@@ -171,7 +171,7 @@ that need to be applied across the concrete instances of the abstraction. Thus, 
 developers can focus on high level abstractions without having to worry about either the platform,
 or the constraints.
 
-On top of this, using such abstract data models enables upstream platform enginners to keep
+On top of this, using such abstract data models enables upstream platform engineers to keep
 different "translation layers" as lambda functions. These can then be used to translate the
 abstractions to different target platforms or environments. For instance, imagine having such a
 function to translate your abstract representation to your production Kubernetes platform, and
@@ -185,7 +185,7 @@ with zero runtime overhead on the cluster. While this speed might seem irrelevan
 central when considering sizable platform setups where large amounts of changes are continuously
 pushed. The compounding effect at scale is not to be underestimated.
 
-Does it peek your interest? Do you want to give KCL a try?
+Does it pique your interest? Do you want to give KCL a try?
 
 # Gradual Adoption
 
@@ -204,7 +204,7 @@ Start by validating a single service; scale gradually without a full rewrite.
 
 # How KCL Stacks Up
 
-So how does it really stack up againts other technologies?
+So how does it really stack up against other technologies?
 
 | Feature                     | KCL     | Helm   | Kustomize | CUE     | HCL    |
 | --------------------------- | ------- | ------ | --------- | ------- | ------ |
@@ -217,7 +217,7 @@ So how does it really stack up againts other technologies?
 Technically, KCL can replace all the other technologies in the table above. Its biggest contender is
 CUE, which offers similar promises. KCL uses a simpler and more flexible constraint language
 compared to CUE, better performance, and much simpler handling of lambdas for data abstractions.
-Nonetheless, CUE supports most of KCL's featureset. In my modest opinion, you probably do not want
+Nonetheless, CUE supports most of KCL's feature-set. In my modest opinion, you probably do not want
 to replace Helm, simply because you likely rely on upstream Helm charts which do not provide
 upstream KCL support.
 
