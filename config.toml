@@ -21,6 +21,11 @@ theme = "gruvbox-dark-medium"
 extra_themes = [
   "./themes/gruvbox-dark.json",
 ]
+extra_grammars = [
+  "./themes/syntax/KCL.tmLanguage.json",
+  "./themes/syntax/Rego.tmLanguage.json",
+]
+
 
 [search]
 include_title = true

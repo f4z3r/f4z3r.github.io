@@ -79,7 +79,7 @@ Comparing KCL with traditional YAML validation:
 
 ## KCL:
 
-```python,linenos
+```kcl,linenos
 # services.k
 _MAX_CPU = 4
 _MAX_MEMORY = int(6Gi)
@@ -87,7 +87,7 @@ _MAX_MEMORY = int(6Gi)
 schema Service:
     name?: str
     image: str
-    protocol: "TCP" | "HTTP" = "HTTP"
+    proto: "TCP" | "HTTP" = "HTTP"
     cpu: float
     memory: int
 
@@ -111,7 +111,7 @@ You start with YAML:
 services:
 - name: web
   image: nginx:latest
-  protocol: HTTP
+  proto: HTTP
   cpu: 0.5
   memory: 268435456
 ```
@@ -145,8 +145,8 @@ deny contains msg if {
 deny contains msg if {
     some i
     service := input.services[i]
-    not VALID_PROTOCOLS[service.protocol]
-    msg := sprintf("Service '%v' has invalid protocol: %v", [service.name, service.protocol])
+    not VALID_PROTOCOLS[service.proto]
+    msg := sprintf("Service '%v' has invalid protocol: %v", [service.name, service.proto])
 }
 ```
 
