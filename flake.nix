@@ -13,6 +13,12 @@
     (
       system: let
         pkgs = import nixpkgs {inherit system;};
+        serve = pkgs.writeShellScriptBin "serve" ''
+          zola serve
+        '';
+        format = pkgs.writeShellScriptBin "format" ''
+          prettier -w --ignore-unknown ./content/
+        '';
       in
         with pkgs; {
           devShell = mkShell {
@@ -20,10 +26,9 @@
               fish
               zola
               prettier
+              serve
+              format
             ];
-            # shellHook = ''
-            #   exec fish
-            # '';
           };
         }
     );
