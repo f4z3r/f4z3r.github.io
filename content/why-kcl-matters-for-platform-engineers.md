@@ -7,7 +7,7 @@ tags = ["kubernetes", "platform-engineering", "devops", "gitops"]
 
 +++
 
-{{ banner(src="/img/kcl/banner.jpeg",
+{{ banner(src="/img/kcl/banner.webp",
           alt="A robot working on a computer writing code.",
           size="width:100%;height:300px;",
           style="margin:-9% 0") }}
@@ -155,7 +155,7 @@ Compare the two approaches and notice how simple the KCL approach is. If we were
 YAML. Only valid YAML can therefore reach a system such as Kubernetes. Moreover, thanks to KCL's
 development ecosystem, its LSP will provide feedback straight in the IDE on most mistakes:
 
-{{ figure(src="/img/kcl/ide-diagnostics.png",
+{{ figure(src="/img/kcl/ide-diagnostics.webp",
           caption="The LSP catches that I try to use a float for an integer field.",
           caption_style="font-weight: bold; font-style: italic;",
           style="border-radius: 8px;") }}

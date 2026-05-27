@@ -7,7 +7,7 @@ tags = ["platform-engineering", "sre", "gitops"]
 
 +++
 
-{{ banner(src="/img/gitops-intro/old-wooden-trading-ship.jpeg",
+{{ banner(src="/img/gitops-intro/old-wooden-trading-ship.webp",
           alt="An old wooden trading ship navigating the wide ocean",
           size="width:100%;height:300px;",
           style="margin:-30% 0") }}

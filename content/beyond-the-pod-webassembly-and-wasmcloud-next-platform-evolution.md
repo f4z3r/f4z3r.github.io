@@ -6,7 +6,7 @@ date = 2025-10-09
 tags = ["wasm", "cloud", "rust", "kubernetes"]
 +++
 
-{{ banner(src="/img/wasmcloud/assembly-line.jpeg",
+{{ banner(src="/img/wasmcloud/assembly-line.webp",
           alt="An assembly line with robot arms.",
           size="width:100%;height:300px;",
           style="margin:-7% 0") }}
@@ -164,7 +164,7 @@ currently more opinionated.
 
 As a reference, here is the diagram wasmCloud uses to provide an overview of the platform:
 
-{{ figure(src="/img/wasmcloud/platform-overview.png",
+{{ figure(src="/img/wasmcloud/platform-overview.webp",
           caption="An overview of the wasmCloud platform",
           caption_style="font-weight: bold; font-style: italic;",
           style="border-radius: 8px;") }}

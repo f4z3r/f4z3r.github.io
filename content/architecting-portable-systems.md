@@ -7,7 +7,7 @@ tags = ["kubernetes", "sovereignty", "open-source"]
 
 +++
 
-{{ banner(src="/img/architecting-portable-systems/banner.png",
+{{ banner(src="/img/architecting-portable-systems/banner.webp",
           alt="A hand holding a ship.",
           size="width:100%;height:300px;",
           style="margin:-8% 0") }}
