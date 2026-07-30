@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Why KCL Matters for Platform Engineers | f4z3r&#x27;s blog</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://f4z3r.github.io/style.css">
+    <link rel="stylesheet" href="https://f4z3r.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://f4z3r.github.io/color/background_dark.css">
+    
+    <link rel="stylesheet" href="https://f4z3r.github.io/font-hack-subset.css">
+
+    <meta name="description" content="">
+
+    <meta property="og:description" content="">
+    <meta property="og:title" content="Why KCL Matters for Platform Engineers | f4z3r's blog">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://f4z3r.github.io/why-kcl-matters-for-platform-engineers/">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:title" content="Why KCL Matters for Platform Engineers | f4z3r's blog">
+    <meta property="twitter:domain" content="f4z3r.github.io">
+    <meta property="twitter:url" content="https://f4z3r.github.io/why-kcl-matters-for-platform-engineers/">
+
+                <link rel="alternate" type="application/rss+xml" title="f4z3r&#x27;s blog RSS Feed" href="https://f4z3r.github.io/rss.xml" />
+                <link rel="alternate" type="application/atom+xml" title="f4z3r&#x27;s blog Atom Feed" href="https://f4z3r.github.io/atom.xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+</head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://f4z3r.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            f4z3r&#x27;s blog
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://f4z3r.github.io">blog</a></li>
+            
+                <li><a href="https://f4z3r.github.io/tags">tags</a></li>
+            
+                <li><a href="https://f4z3r.github.io/about">about me</a></li>
+            
+                <li><a href="https://github.com/f4z3r/" target="_blank" rel="noopener noreferrer">github</a></li>
+            
+                <li><a href="https://www.linkedin.com/in/jakob-beckmann/" target="_blank" rel="noopener noreferrer">linkedin</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://f4z3r.github.io/why-kcl-matters-for-platform-engineers/">Why KCL Matters for Platform Engineers</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2026-05-02
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/devops/">#devops</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/gitops/">#gitops</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/kubernetes/">#kubernetes</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/platform-engineering/">#platform-engineering</a></span>
+    
+
+        <div class="post-content">
+            
+  
+  
+    
+    
+  
+  <div style="overflow:hidden;width:100%;height:300px;">
+    <img src="https://f4z3r.github.io/img/kcl/banner.webp" alt="A robot working on a computer writing code." class="center" style="margin:-9% 0" decoding="async" loading="lazy"/>
+  </div>
+
+
+<!--
+vim: ft=liquid
+-->
+<blockquote>
+<p><strong>Author’s Note</strong>: I have contributed to the <a rel="noopener nofollow noreferrer external" target="_blank" href="https://www.kcl-lang.io/">KCL</a> project and have run
+thousands of KCL programs while exploring the language and executing its test suite. These
+insights and benchmarks come from hands‑on experience. While I currently do not use KCL in
+production, I've focused on solving real platform engineering challenges with it.</p>
+</blockquote>
+<h1 id="the-pain-of-yaml-sprawl">The Pain of YAML Sprawl</h1>
+<p>As teams adopt Kubernetes and GitOps, they wrestle with thousands of YAML files. YAML is
+human‑readable but offers no abstraction, so companies build their own templating and validation
+tools, leading to fragile, hard‑to‑validate manifests that drift over time.</p>
+<p>The result? A monolithic repo full of brittle YAML that breaks at deployment. Teams use Helm,
+Kustomize, or custom Python scripts, but validation still happens at runtime, creating a painful
+"write → validate → deploy" cycle. When was the last time you updated a Helm values file to realise
+after deployment that the change has no effect because you have a typo in the YAML structure and
+Helm silently ignored the entire thing? Or even better: you created a Kustomize patch that lead to
+an invalid Kubernetes resource definition, leading to a
+<a rel="noopener nofollow noreferrer external" target="_blank" href="https://argo-cd.readthedocs.io/en/stable/">ArgoCD</a> sync failure?</p>
+<p>I have seen this firsthand on a project. We use Go templating in ArgoCD ApplicationSets with <code>dig</code>
+expressions for lookups and default values. However, as our platform definition is pure YAML, we
+felt the need to introduce <a rel="noopener nofollow noreferrer external" target="_blank" href="https://cuelang.org/">CUE</a> for schema validation and custom Python
+scripts to ensure <code>dig</code> expressions resolve. At this point, we are using more than three complex
+technologies just create abstractions in a relatively safe manner.</p>
+<p>KCL tackles this head‑on. It "compiles" KCL source files into plain YAML. While doing so, it
+validates schemas, enforces constraints, and guarantees correct abstraction usage.</p>
+<span id="continue-reading"></span><h1 id="why-kcl-changes-the-game">Why KCL Changes the Game</h1>
+<p>KCL's compiled, constraint‑based model shifts everything from runtime to compile time. Unlike Python
+or <a rel="noopener nofollow noreferrer external" target="_blank" href="https://github.com/hashicorp/hcl">HCL</a>, constraints are enforced during compilation of KCL
+source files, guaranteeing deterministic behaviour across environments. You therefore benefit from:</p>
+<ul>
+<li><strong>Early error detection</strong>: no surprise failures at deploy time. KCL validates the Kubernetes
+resources it would output before you get to see any YAML.</li>
+<li><strong>No manual templating</strong>: no juggling Helm values or Jinja syntax. KCL does not feel like a "hack"
+that was slapped on top of YAML.</li>
+<li><strong>Strong typing &amp; schema enforcement</strong>: reduces drift and copy‑paste mistakes. KCL is a strongly
+typed language providing a powerful development environment.</li>
+</ul>
+<p>Compared to CUE or HCL, KCL delivers the same safety plus a simpler, more expressive syntax and
+tighter GitOps integration.</p>
+<h1 id="catching-bugs-before-they-bite">Catching Bugs Before They Bite</h1>
+<p>By validating at YAML generation, KCL removes the classic issue of:</p>
+<ol>
+<li>Write YAML with little guidance about correctness.</li>
+<li>Validate it against a schema if you are lucky enough to actually have a pipeline doing this.</li>
+<li>Deploy and hope everything will work.</li>
+</ol>
+<p>From what I have seen, projects tend to not have such a step 2 when it comes to infrastructure
+automation on Kubernetes:</p>
+<ul>
+<li>Helm charts are not templated to ensure their output are valid Kubernetes manifests,</li>
+<li>Kustomize is only ever executed by ArgoCD/<a rel="noopener nofollow noreferrer external" target="_blank" href="https://fluxcd.io/">FluxCD</a> and thus never validated to
+work before deployment,</li>
+<li>Constraints on deployed objects are only validated by policy engines running as Kubernetes
+validating webhooks. Developers resort to "test-deploy" resources to see if they pass validation.</li>
+</ul>
+<p>Comparing KCL with traditional YAML validation:</p>
+<h2 id="kcl">KCL:</h2>
+<pre class="giallo" style="color: #EBDBB2; background-color: #282828;"><code data-lang="KCL"><span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 1</span><span style="color: #928374;font-style: italic;"># services.k</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 2</span><span>_MAX_CPU = </span><span style="color: #D3869B;">4</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 3</span><span>_MAX_MEMORY = </span><span style="color: #FABD2F;">int</span><span>(</span><span style="color: #D3869B;">6</span><span>Gi)</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 4</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 5</span><span style="color: #FB4934;">schema</span><span> Service:</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 6</span><span>    name?: </span><span style="color: #FABD2F;">str</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 7</span><span>    image: </span><span style="color: #FABD2F;">str</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 8</span><span>    proto: </span><span style="color: #B8BB26;">&quot;TCP&quot;</span><span> | </span><span style="color: #B8BB26;">&quot;HTTP&quot;</span><span> = </span><span style="color: #B8BB26;">&quot;HTTP&quot;</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 9</span><span>    cpu: </span><span style="color: #FABD2F;">float</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">10</span><span>    memory: </span><span style="color: #FABD2F;">int</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">11</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">12</span><span style="color: #FB4934;">    check</span><span>:</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">13</span><span>        cpu &lt;= _MAX_CPU </span><span style="color: #FB4934;">and</span><span> memory &lt;= _MAX_MEMORY</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">14</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">15</span><span>services = [Service {</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">16</span><span>    name: </span><span style="color: #B8BB26;">&quot;web&quot;</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">17</span><span>    image: </span><span style="color: #B8BB26;">&quot;nginx:latest&quot;</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">18</span><span>    cpu: </span><span style="color: #FABD2F;">float</span><span>(</span><span style="color: #D3869B;">500</span><span>m)</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">19</span><span>    memory: </span><span style="color: #FABD2F;">int</span><span>(</span><span style="color: #D3869B;">256</span><span>Mi)</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">20</span><span>}] </span><span style="color: #928374;font-style: italic;"># This will output validated YAML when running `kcl services.k`.</span></span></code></pre><h2 id="traditional-yaml-rego">Traditional (YAML + <a rel="noopener nofollow noreferrer external" target="_blank" href="https://www.openpolicyagent.org/docs/policy-language">Rego</a>):</h2>
+<p>You start with YAML:</p>
+<pre class="giallo" style="color: #EBDBB2; background-color: #282828;"><code data-lang="yaml"><span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">1</span><span style="color: #928374;font-style: italic;"># services.yaml</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">2</span><span style="color: #8EC07C;">services</span><span style="color: #A89984;">:</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">3</span><span style="color: #A89984;">-</span><span style="color: #8EC07C;"> name</span><span style="color: #A89984;">:</span><span style="color: #B8BB26;"> web</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">4</span><span style="color: #8EC07C;">  image</span><span style="color: #A89984;">:</span><span style="color: #B8BB26;"> nginx:latest</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">5</span><span style="color: #8EC07C;">  proto</span><span style="color: #A89984;">:</span><span style="color: #B8BB26;"> HTTP</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">6</span><span style="color: #8EC07C;">  cpu</span><span style="color: #A89984;">:</span><span style="color: #D3869B;"> 0.5</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">7</span><span style="color: #8EC07C;">  memory</span><span style="color: #A89984;">:</span><span style="color: #D3869B;"> 268435456</span></span></code></pre>
+<p>Validation happens downstream, requiring complex Rego rules and still allowing the YAML to exist
+before errors surface.</p>
+<pre class="giallo" style="color: #EBDBB2; background-color: #282828;"><code data-lang="Rego"><span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 1</span><span style="color: #928374;font-style: italic;"># validate.rego</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 2</span><span style="color: #FB4934;">package </span><span>main</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 3</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 4</span><span style="color: #FABD2F;">GI</span><span> := (</span><span style="color: #D3869B;">1024</span><span style="color: #8EC07C;"> *</span><span style="color: #D3869B;"> 1024</span><span>) </span><span style="color: #8EC07C;">*</span><span style="color: #D3869B;"> 1024</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 5</span><span style="color: #FABD2F;">MAX_CPU</span><span> :=</span><span style="color: #D3869B;"> 4</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 6</span><span style="color: #FABD2F;">MAX_MEMORY</span><span> :=</span><span style="color: #D3869B;"> 6</span><span style="color: #8EC07C;"> *</span><span> GI</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 7</span><span style="color: #FABD2F;">VALID_PROTOCOLS</span><span> := {</span><span style="color: #A89984;">&quot;</span><span style="color: #B8BB26;">TCP</span><span style="color: #A89984;">&quot;</span><span>, </span><span style="color: #A89984;">&quot;</span><span style="color: #B8BB26;">HTTP</span><span style="color: #A89984;">&quot;</span><span>}</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 8</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;"> 9</span><span style="color: #FABD2F;">deny</span><span> contains msg if {</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">10</span><span style="color: #FB4934;">    some </span><span>i</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">11</span><span>    service</span><span style="color: #8EC07C;"> :=</span><span> input.services[i]</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">12</span><span>    service.cpu</span><span style="color: #8EC07C;"> &gt;</span><span> MAX_CPU</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">13</span><span>    msg</span><span style="color: #8EC07C;"> :=</span><span> sprintf(</span><span style="color: #A89984;">&quot;</span><span style="color: #B8BB26;">Service &#39;%v&#39; exceeds CPU limit: got %v, max %v</span><span style="color: #A89984;">&quot;</span><span>, [service.name, service.cpu, MAX_CPU])</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">14</span><span>}</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">15</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">16</span><span style="color: #FABD2F;">deny</span><span> contains msg if {</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">17</span><span style="color: #FB4934;">    some </span><span>i</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">18</span><span>    service</span><span style="color: #8EC07C;"> :=</span><span> input.services[i]</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">19</span><span>    service.memory</span><span style="color: #8EC07C;"> &gt;</span><span> MAX_MEMORY</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">20</span><span>    msg</span><span style="color: #8EC07C;"> :=</span><span> sprintf(</span><span style="color: #A89984;">&quot;</span><span style="color: #B8BB26;">Service &#39;%v&#39; exceeds Memory limit: got %v, max %v</span><span style="color: #A89984;">&quot;</span><span>, [service.name, service.memory, MAX_MEMORY])</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">21</span><span>}</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">22</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">23</span><span style="color: #FABD2F;">deny</span><span> contains msg if {</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">24</span><span style="color: #FB4934;">    some </span><span>i</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">25</span><span>    service</span><span style="color: #8EC07C;"> :=</span><span> input.services[i]</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">26</span><span style="color: #FB4934;">    not </span><span>VALID_PROTOCOLS[service.proto]</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">27</span><span>    msg</span><span style="color: #8EC07C;"> :=</span><span> sprintf(</span><span style="color: #A89984;">&quot;</span><span style="color: #B8BB26;">Service &#39;%v&#39; has invalid protocol: %v</span><span style="color: #A89984;">&quot;</span><span>, [service.name, service.proto])</span></span>
+<span class="giallo-l"><span aria-hidden="true" class="giallo-ln" style="color: #665C54;">28</span><span>}</span></span></code></pre>
+<p>Compare the two approaches and notice how simple the KCL approach is. If we were to write a
+<code>Service</code> that does not conform to the constraints, KCL would fail early and not even generate any
+YAML. Only valid YAML can therefore reach a system such as Kubernetes. Moreover, thanks to KCL's
+development ecosystem, its LSP will provide feedback straight in the IDE on most mistakes:</p>
+
+  <figure class="center" >
+    <div class="zoomable-image-container">
+      <img src="/img/kcl/ide-diagnostics.webp" style="border-radius: 8px;" decoding="async" loading="lazy"/>
+    </div>
+    
+      <figcaption class="center" style="font-weight: bold; font-style: italic;"><p>The LSP catches that I try to use a float for an integer field.</p>
+</figcaption>
+    
+  </figure>
+
+<p>But KCL also offers other benefits...</p>
+<h1 id="data-modelling-made-simple">Data Modelling Made Simple</h1>
+<p>KCL also supports lambda functions. This enables developers to define a schema for a high level
+abstraction and then leveraging functions to translate the abstraction into a detailed platform
+definition. The lambda function encapsulates both the platform complexity and central constraints
+that need to be applied across the concrete instances of the abstraction. Thus, downstream
+developers can focus on high level abstractions without having to worry about either the platform,
+or the constraints.</p>
+<p>On top of this, using such abstract data models enables upstream platform engineers to keep
+different "translation layers" as lambda functions. These can then be used to translate the
+abstractions to different target platforms or environments. For instance, imagine having such a
+function to translate your abstract representation to your production Kubernetes platform, and
+another to translate it to a Docker compose file for local debugging of the application!</p>
+<h1 id="speed-and-scale">Speed and Scale</h1>
+<p>A single pass compiler, incremental evaluation, and aggressive caching mean that a repo with &gt;30,000
+services compiles in ~3 seconds on a modest laptop. This is faster than Helm or Kustomize templates,
+with zero runtime overhead on the cluster. While this speed might seem irrelevant, it becomes
+central when considering sizable platform setups where large amounts of changes are continuously
+pushed. The compounding effect at scale is not to be underestimated.</p>
+<p>Does it pique your interest? Do you want to give KCL a try?</p>
+<h1 id="gradual-adoption">Gradual Adoption</h1>
+<p>Switching your entire infrastructure management stack to KCL is probably not the way to go. You will
+want to adopt it in small steps.</p>
+<p>You can start right where you are:</p>
+<ol>
+<li>Gradually start writing schemas and only validate your existing YAML against these schemas with
+<code>kcl vet</code>.</li>
+<li>Start moving some YAML manifests to KCL to render them. This can be done either in your CI, or
+even using ArgoCD/FluxCD plugins to have your CD sync KCL just like Helm or Kustomize.</li>
+<li>Where necessary, adopt SDKs to embed validation in your pipelines of choice.</li>
+</ol>
+<p>Start by validating a single service; scale gradually without a full rewrite.</p>
+<h1 id="how-kcl-stacks-up">How KCL Stacks Up</h1>
+<p>So how does it really stack up against other technologies?</p>
+<table><thead><tr><th>Feature</th><th>KCL</th><th>Helm</th><th>Kustomize</th><th>CUE</th><th>HCL</th></tr></thead><tbody>
+<tr><td>Strong typing</td><td>✅</td><td>❌</td><td>❌</td><td>✅</td><td>❌</td></tr>
+<tr><td>Explicit schemas</td><td>✅</td><td>❌</td><td>❌</td><td>✅</td><td>❌</td></tr>
+<tr><td>Compile‑time validation</td><td>✅</td><td>❌</td><td>❌</td><td>✅</td><td>❌</td></tr>
+<tr><td>GitOps integration (ArgoCD)</td><td>✅</td><td>✅</td><td>✅</td><td>❌</td><td>❌</td></tr>
+<tr><td>Community &amp; tooling</td><td>Growing</td><td>Mature</td><td>Mature</td><td>Growing</td><td>Mature</td></tr>
+</tbody></table>
+<p>Technically, KCL can replace all the other technologies in the table above. Its biggest contender is
+CUE, which offers similar promises. KCL uses a simpler and more flexible constraint language
+compared to CUE, better performance, and much simpler handling of lambdas for data abstractions.
+Nonetheless, CUE supports most of KCL's feature-set. In my modest opinion, you probably do not want
+to replace Helm, simply because you likely rely on upstream Helm charts which do not provide
+upstream KCL support.</p>
+<p>However, in the case of the project I talked about at the beginning of this article, we could use
+KCL to replace:</p>
+<ul>
+<li>CUE and Python for validation,</li>
+<li>Go templating in ArgoCD (by using the KCL plugin),</li>
+<li>and even the few remaining Kustomize snippets that we still rely on.</li>
+</ul>
+<p>Replacing three technologies by a single, easier to use one is a win in my books.</p>
+<h1 id="your-next-step">Your next Step</h1>
+<p>The next time you encounter a pain point with YAML (which ought to be soon), consider how KCL could
+have mitigated this. Give it a try, and see for yourself how it can provide the level of stability
+and correctness that should be required for critical platform configuration. Once you play with it a
+little, you will see not only how it will improve the trust in your changes, but the potential data
+abstractions have for easier platform usage for your downstream developers!</p>
+
+        </div>
+
+        
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h">Thanks for reading! Read other posts?</span>
+                    <hr />
+                </div>
+                <div class="pagination__buttons">
+                        <span class="button previous">
+                            <a href="https://f4z3r.github.io/architecting-portable-systems/">
+                                <span class="button__icon">←</span>&nbsp;
+                                <span class="button__text">Architecting Portable Systems on Open Standards for Digital Sovereignty</span>
+                            </a>
+                        </span>
+                    
+                    
+                        <span class="button next">
+                            <a href="https://f4z3r.github.io/open-source-and-monorepos/">
+                                <span class="button__text">Why Is No One Talking About Repository Structure?</span>&nbsp;
+                                <span class="button__icon">→</span>
+                            </a>
+                        </span>
+                    </div>
+            </div>
+        
+       <div class="pagination">
+         <div class="pagination__title">
+           <span class="pagination__title-h">Comment Section</span>
+           <hr />
+         </div>
+       </div>
+
+      <div class="giscus comments"></div>
+      <script src="https://giscus.app/client.js"
+        data-repo="f4z3r/f4z3r.github.io"
+        data-repo-id="R_kgDON5I2cQ"
+        data-category="Ideas"
+        data-category-id="DIC_kwDON5I2cc4Cm_yp"
+        data-mapping="og:title"
+        data-strict="1"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="gruvbox_dark"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </div>
+
+    </div>
+
+    
+    <footer class="footer">
+        <div class="footer__inner">
+                <div class="copyright">
+                        <span>© 
+    2026
+ Jakob Beckmann</span>
+                    <span class="copyright-theme">
+                        <span class="copyright-theme-sep">:: </span>
+                        This work is licenced under <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.en">CC BY-SA 4.0</a>
+                    </span>
+                </div>
+            </div>
+    </footer>
+    
+
+</div>
+<div id="fullpage" style="display: none;">
+  <span class="close-btn">&times;</span>
+  <img id="fullscreen-image" src="" alt="">
+</div>
+<script src="https://f4z3r.github.io/js/zoomable-images.js"></script>
+</body>
+
+</html>

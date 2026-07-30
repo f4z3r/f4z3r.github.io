@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>f4z3r&#x27;s blog</title>
+      <link>https://f4z3r.github.io</link>
+      <description></description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="https://f4z3r.github.io/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Thu, 30 Jul 2026 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>Why Is No One Talking About Repository Structure?</title>
+          <pubDate>Thu, 30 Jul 2026 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://f4z3r.github.io/open-source-and-monorepos/</link>
+          <guid>https://f4z3r.github.io/open-source-and-monorepos/</guid>
+          <description xml:base="https://f4z3r.github.io/open-source-and-monorepos/">
+  
+  
+    
+    
+  
+  &lt;div style=&quot;overflow:hidden;width:100%;height:300px;&quot;&gt;
+    &lt;img src=&quot;https:&#x2F;&#x2F;f4z3r.github.io&#x2F;img&#x2F;monorepos&#x2F;multi-repo-vs-monorepo.webp&quot; alt=&quot;Dependent repositories versus a single monorepository.&quot; class=&quot;center&quot; style=&quot;margin:-10% 0&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot;&#x2F;&gt;
+  &lt;&#x2F;div&gt;
+
+
+&lt;!--
+vim: ft=liquid
+--&gt;
+&lt;p&gt;Over the last couple of months, I have been more involved in contributing to open source again.
+Helping maintainers improve their products is such a rewarding and eye-opening experience. It is an
+opportunity to learn how others solve complex problems and work on projects that tend to be
+significantly more mature than most enterprise software regarding engineering practices and
+automation.&lt;&#x2F;p&gt;
+&lt;p&gt;I was quite hyped when assigned a task to implement a small feature with actual end-user impact. It
+was nothing fancy: essentially, adding a flag to a CLI command to slightly modify user-facing
+behavior.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Why KCL Matters for Platform Engineers</title>
+          <pubDate>Sat, 02 May 2026 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://f4z3r.github.io/why-kcl-matters-for-platform-engineers/</link>
+          <guid>https://f4z3r.github.io/why-kcl-matters-for-platform-engineers/</guid>
+          <description xml:base="https://f4z3r.github.io/why-kcl-matters-for-platform-engineers/">
+  
+  
+    
+    
+  
+  &lt;div style=&quot;overflow:hidden;width:100%;height:300px;&quot;&gt;
+    &lt;img src=&quot;https:&#x2F;&#x2F;f4z3r.github.io&#x2F;img&#x2F;kcl&#x2F;banner.webp&quot; alt=&quot;A robot working on a computer writing code.&quot; class=&quot;center&quot; style=&quot;margin:-9% 0&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot;&#x2F;&gt;
+  &lt;&#x2F;div&gt;
+
+
+&lt;!--
+vim: ft=liquid
+--&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Author’s Note&lt;&#x2F;strong&gt;: I have contributed to the &lt;a rel=&quot;noopener nofollow noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.kcl-lang.io&#x2F;&quot;&gt;KCL&lt;&#x2F;a&gt; project and have run
+thousands of KCL programs while exploring the language and executing its test suite. These
+insights and benchmarks come from hands‑on experience. While I currently do not use KCL in
+production, I&#x27;ve focused on solving real platform engineering challenges with it.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h1 id=&quot;the-pain-of-yaml-sprawl&quot;&gt;The Pain of YAML Sprawl&lt;&#x2F;h1&gt;
+&lt;p&gt;As teams adopt Kubernetes and GitOps, they wrestle with thousands of YAML files. YAML is
+human‑readable but offers no abstraction, so companies build their own templating and validation
+tools, leading to fragile, hard‑to‑validate manifests that drift over time.&lt;&#x2F;p&gt;
+&lt;p&gt;The result? A monolithic repo full of brittle YAML that breaks at deployment. Teams use Helm,
+Kustomize, or custom Python scripts, but validation still happens at runtime, creating a painful
+&quot;write → validate → deploy&quot; cycle. When was the last time you updated a Helm values file to realise
+after deployment that the change has no effect because you have a typo in the YAML structure and
+Helm silently ignored the entire thing? Or even better: you created a Kustomize patch that lead to
+an invalid Kubernetes resource definition, leading to a
+&lt;a rel=&quot;noopener nofollow noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;argo-cd.readthedocs.io&#x2F;en&#x2F;stable&#x2F;&quot;&gt;ArgoCD&lt;&#x2F;a&gt; sync failure?&lt;&#x2F;p&gt;
+&lt;p&gt;I have seen this firsthand on a project. We use Go templating in ArgoCD ApplicationSets with &lt;code&gt;dig&lt;&#x2F;code&gt;
+expressions for lookups and default values. However, as our platform definition is pure YAML, we
+felt the need to introduce &lt;a rel=&quot;noopener nofollow noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;cuelang.org&#x2F;&quot;&gt;CUE&lt;&#x2F;a&gt; for schema validation and custom Python
+scripts to ensure &lt;code&gt;dig&lt;&#x2F;code&gt; expressions resolve. At this point, we are using more than three complex
+technologies just create abstractions in a relatively safe manner.&lt;&#x2F;p&gt;
+&lt;p&gt;KCL tackles this head‑on. It &quot;compiles&quot; KCL source files into plain YAML. While doing so, it
+validates schemas, enforces constraints, and guarantees correct abstraction usage.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Architecting Portable Systems on Open Standards for Digital Sovereignty</title>
+          <pubDate>Mon, 23 Mar 2026 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://f4z3r.github.io/architecting-portable-systems/</link>
+          <guid>https://f4z3r.github.io/architecting-portable-systems/</guid>
+          <description xml:base="https://f4z3r.github.io/architecting-portable-systems/">
+  
+  
+    
+    
+  
+  &lt;div style=&quot;overflow:hidden;width:100%;height:300px;&quot;&gt;
+    &lt;img src=&quot;https:&#x2F;&#x2F;f4z3r.github.io&#x2F;img&#x2F;architecting-portable-systems&#x2F;banner.webp&quot; alt=&quot;A hand holding a ship.&quot; class=&quot;center&quot; style=&quot;margin:-8% 0&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot;&#x2F;&gt;
+  &lt;&#x2F;div&gt;
+
+
+&lt;!--
+vim: ft=liquid
+--&gt;
+&lt;blockquote&gt;
+&lt;p&gt;This article was originally posted on
+&lt;a rel=&quot;noopener nofollow noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.infoq.com&#x2F;articles&#x2F;portable-systems-sovereignty&#x2F;&quot;&gt;InfoQ&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;Digital sovereignty isn&#x27;t about building everything yourself; it&#x27;s about having a valid &quot;Plan B&quot;.
+What would your &quot;Plan B&quot; be if your vendor for a critical system suddenly decided to
+&lt;a rel=&quot;noopener nofollow noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.ciodive.com&#x2F;news&#x2F;broadcom-vmware-acquistion-vcf-private-cloud&#x2F;733800&#x2F;&quot;&gt;quadruple its price tag&lt;&#x2F;a&gt;
+or if it decided to abandon product development and suddenly communicated a
+&lt;a rel=&quot;noopener nofollow noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;techcrunch.com&#x2F;2022&#x2F;08&#x2F;17&#x2F;google-cloud-will-shutter-its-iot-core-service-next-year&#x2F;&quot;&gt;product &quot;end-of-life&quot; deadline&lt;&#x2F;a&gt;?
+How would you feel if your government were utterly reliant on another geopolitical entity in order
+to sustain basic (digital) operations? What if your access to a SaaS provider were suddenly revoked
+due to international sanctions?&lt;&#x2F;p&gt;
+&lt;p&gt;In this article I will dive into three aspects of digital sovereignty and illustrate how
+architectural choices and constraints can help address the scenarios described above. I will share
+some insights into the benefits and risks of building &quot;sovereign systems&quot;, and illustrate high-level
+examples why this architectural choice might be more challenging than most people expect. As a
+software architect working for various large enterprises, I share insights into open standards as
+one of the main pillars to achieve sovereignty. It should, however, be noted that sovereignty is a
+much larger topic overall.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Beyond the Pod: Why wasmCloud and WebAssembly Might Be the Next Evolution of the Platform</title>
+          <pubDate>Thu, 09 Oct 2025 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://f4z3r.github.io/beyond-the-pod-webassembly-and-wasmcloud-next-platform-evolution/</link>
+          <guid>https://f4z3r.github.io/beyond-the-pod-webassembly-and-wasmcloud-next-platform-evolution/</guid>
+          <description xml:base="https://f4z3r.github.io/beyond-the-pod-webassembly-and-wasmcloud-next-platform-evolution/">
+  
+  
+    
+    
+  
+  &lt;div style=&quot;overflow:hidden;width:100%;height:300px;&quot;&gt;
+    &lt;img src=&quot;https:&#x2F;&#x2F;f4z3r.github.io&#x2F;img&#x2F;wasmcloud&#x2F;assembly-line.webp&quot; alt=&quot;An assembly line with robot arms.&quot; class=&quot;center&quot; style=&quot;margin:-7% 0&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot;&#x2F;&gt;
+  &lt;&#x2F;div&gt;
+
+
+&lt;!--
+vim: ft=liquid
+--&gt;
+&lt;p&gt;Over the past few months I have invested some time to contribute to an open source project I find
+fascinating: &lt;a rel=&quot;noopener nofollow noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;wasmcloud.com&#x2F;&quot;&gt;wasmCloud&lt;&#x2F;a&gt;. As a platform engineer and architect, I am very
+familiar with how software platforms are typically built in practice. However, with the ubiquity of
+Kubernetes, you run the risk to being stuck in the &quot;doing it the Kubernetes way&quot; line of thinking.
+But then again, are there any better ways? This is where wasmCloud caught my attention. A modern
+platform building on proven concepts from Kubernetes, but with some significant differences. In this
+article I want to introduce wasmCloud, how it compares to Kubernetes, what its internal architecture
+looks like, and what ideas are, in my humble opinion, a step up from &quot;the Kubernetes way of things&quot;.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>Dissecting Kubewarden: Internals, How It&#x27;s Built, and Its Place Among Policy Engines</title>
+          <pubDate>Sat, 03 May 2025 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://f4z3r.github.io/dissecting-kubewarden-internals-built-comparison/</link>
+          <guid>https://f4z3r.github.io/dissecting-kubewarden-internals-built-comparison/</guid>
+          <description xml:base="https://f4z3r.github.io/dissecting-kubewarden-internals-built-comparison/">
+  
+  
+    
+    
+  
+  &lt;div style=&quot;overflow:hidden;width:100%;height:300px;&quot;&gt;
+    &lt;img src=&quot;https:&#x2F;&#x2F;f4z3r.github.io&#x2F;img&#x2F;kubewarden&#x2F;knight.jpeg&quot; alt=&quot;A knight in armor striding forward with his sword drawn.&quot; class=&quot;center&quot; style=&quot;margin:-15% 0&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot;&#x2F;&gt;
+  &lt;&#x2F;div&gt;
+
+
+&lt;!--
+vim: ft=liquid
+--&gt;
+&lt;p&gt;Kubernetes offers amazing capabilities to improve compute density compared to older runtimes such as
+virtual machines. However, in oder to leverage the capabilities of the platform, these tend to host
+applications from various tenants. This introduces a strong need for properly crafted controls and
+well-defined compliance to ensure the tenants use the platform correctly and do not affect one
+another. The RBAC capabilities provided out of the box by Kubernetes are quickly insufficient to
+address this need. This is where policy engines such as &lt;a rel=&quot;noopener nofollow noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.kubewarden.io&#x2F;&quot;&gt;Kubewarden&lt;&#x2F;a&gt;
+come into play. In this post we will look at how Kubewarden can be leveraged to ensure correct usage
+of a platform, how it compares to other policy engines, and how to best adopt it.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>The Tortoise and the Hare: do AI Agents Really Help for Software Development?</title>
+          <pubDate>Sat, 19 Apr 2025 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://f4z3r.github.io/the-tortoise-and-the-hare-do-ai-agents-really-help/</link>
+          <guid>https://f4z3r.github.io/the-tortoise-and-the-hare-do-ai-agents-really-help/</guid>
+          <description xml:base="https://f4z3r.github.io/the-tortoise-and-the-hare-do-ai-agents-really-help/">
+  
+  
+    
+    
+  
+  &lt;div style=&quot;overflow:hidden;width:100%;height:300px;&quot;&gt;
+    &lt;img src=&quot;https:&#x2F;&#x2F;f4z3r.github.io&#x2F;img&#x2F;ai-agents&#x2F;robot-ai.jpeg&quot; alt=&quot;A robot working on a computer writing code.&quot; class=&quot;center&quot; style=&quot;margin:-20% 0&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot;&#x2F;&gt;
+  &lt;&#x2F;div&gt;
+
+
+&lt;!--
+vim: ft=liquid
+--&gt;
+&lt;p&gt;Making my development workflow as fast as possible is a big passion of mine. From customizing my
+development setup to get the last inkling of efficiency out of it, to thinking how to manage notes
+and knowledge resources to access them as quickly as possible. With the sudden ubiquity of AI in
+development tools, I came to wonder how AI could help me write code faster. Being quite the skeptic
+when it comes to AI actually generating code for me (using tools such as Cursor or GitHub Copilot),
+I came to investigate AI agents which specialise in code reviews. In this blog post I will share my
+experience using such an agent on a real world case. I will explore where such agents shine and
+where they are severely lacking.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>A Comprehensive Guide to Managing Large Scale Infrastructure with GitOps</title>
+          <pubDate>Sun, 30 Mar 2025 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://f4z3r.github.io/a-comprehensive-guide-to-managing-large-scale-infrastructure-with-gitops/</link>
+          <guid>https://f4z3r.github.io/a-comprehensive-guide-to-managing-large-scale-infrastructure-with-gitops/</guid>
+          <description xml:base="https://f4z3r.github.io/a-comprehensive-guide-to-managing-large-scale-infrastructure-with-gitops/">
+  
+  
+    
+    
+  
+  &lt;div style=&quot;overflow:hidden;width:100%;height:300px;&quot;&gt;
+    &lt;img src=&quot;https:&#x2F;&#x2F;f4z3r.github.io&#x2F;img&#x2F;gitops-intro&#x2F;old-wooden-trading-ship.webp&quot; alt=&quot;An old wooden trading ship navigating the wide ocean&quot; class=&quot;center&quot; style=&quot;margin:-30% 0&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot;&#x2F;&gt;
+  &lt;&#x2F;div&gt;
+
+
+&lt;!--
+vim: ft=liquid
+--&gt;
+&lt;p&gt;GitOps is getting adopted more and more. However, there still seems to be some confusion as to what
+GitOps is, how it differs from regular CI&#x2F;CD pipelines, and how to best adopt it. In this post we
+will quickly cover what GitOps is, and the three main lessons learned from using GitOps to manage
+infrastructure at scale both on premise and in the cloud.&lt;&#x2F;p&gt;</description>
+      </item>
+      <item>
+          <title>A Very Deep Dive Into Docker Builds</title>
+          <pubDate>Tue, 26 Nov 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://f4z3r.github.io/a-very-deep-dive-into-docker-builds/</link>
+          <guid>https://f4z3r.github.io/a-very-deep-dive-into-docker-builds/</guid>
+          <description xml:base="https://f4z3r.github.io/a-very-deep-dive-into-docker-builds/">
+  
+  
+    
+    
+  
+  &lt;div style=&quot;overflow:hidden;width:100%;height:300px;&quot;&gt;
+    &lt;img src=&quot;https:&#x2F;&#x2F;f4z3r.github.io&#x2F;img&#x2F;docker-builds&#x2F;diver.webp&quot; alt=&quot;A man diving deep into the depths of the sea.&quot; class=&quot;center&quot; style=&quot;margin:-25% 0&quot; decoding=&quot;async&quot; loading=&quot;lazy&quot;&#x2F;&gt;
+  &lt;&#x2F;div&gt;
+
+
+&lt;!--
+vim: ft=liquid
+--&gt;
+&lt;p&gt;Containers are everywhere. From Kubernetes for orchestrating deployments and simplifing operations
+to Dev Containers for flexible yet reproducible development environments. Yet, while they are
+ubiquitous, images are often built sub-optimally. In this post we will be looking at a full example
+of a Docker build for a Python application and what best practices to consider.&lt;&#x2F;p&gt;</description>
+      </item>
+    </channel>
+</rss>
