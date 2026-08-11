@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Why Is No One Talking About Repository Structure? | f4z3r&#x27;s blog</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://f4z3r.github.io/style.css">
+    <link rel="stylesheet" href="https://f4z3r.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://f4z3r.github.io/color/background_dark.css">
+    
+    <link rel="stylesheet" href="https://f4z3r.github.io/font-hack-subset.css">
+
+    <meta name="description" content="">
+
+    <meta property="og:description" content="">
+    <meta property="og:title" content="Why Is No One Talking About Repository Structure? | f4z3r's blog">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://f4z3r.github.io/open-source-and-monorepos/">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:title" content="Why Is No One Talking About Repository Structure? | f4z3r's blog">
+    <meta property="twitter:domain" content="f4z3r.github.io">
+    <meta property="twitter:url" content="https://f4z3r.github.io/open-source-and-monorepos/">
+
+                <link rel="alternate" type="application/rss+xml" title="f4z3r&#x27;s blog RSS Feed" href="https://f4z3r.github.io/rss.xml" />
+                <link rel="alternate" type="application/atom+xml" title="f4z3r&#x27;s blog Atom Feed" href="https://f4z3r.github.io/atom.xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+</head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://f4z3r.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            f4z3r&#x27;s blog
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://f4z3r.github.io">blog</a></li>
+            
+                <li><a href="https://f4z3r.github.io/tags">tags</a></li>
+            
+                <li><a href="https://f4z3r.github.io/about">about me</a></li>
+            
+                <li><a href="https://github.com/f4z3r/" target="_blank" rel="noopener noreferrer">github</a></li>
+            
+                <li><a href="https://www.linkedin.com/in/jakob-beckmann/" target="_blank" rel="noopener noreferrer">linkedin</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://f4z3r.github.io/open-source-and-monorepos/">Why Is No One Talking About Repository Structure?</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2026-07-30
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/architecture/">#architecture</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/devops/">#devops</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/open-source/">#open-source</a></span>
+    
+
+        <div class="post-content">
+            
+  
+  
+    
+    
+  
+  <div style="overflow:hidden;width:100%;height:300px;">
+    <img src="https://f4z3r.github.io/img/monorepos/multi-repo-vs-monorepo.webp" alt="Dependent repositories versus a single monorepository." class="center" style="margin:-10% 0" decoding="async" loading="lazy"/>
+  </div>
+
+
+<!--
+vim: ft=liquid
+-->
+<p>Over the last couple of months, I have been more involved in contributing to open source again.
+Helping maintainers improve their products is such a rewarding and eye-opening experience. It is an
+opportunity to learn how others solve complex problems and work on projects that tend to be
+significantly more mature than most enterprise software regarding engineering practices and
+automation.</p>
+<p>I was quite hyped when assigned a task to implement a small feature with actual end-user impact. It
+was nothing fancy: essentially, adding a flag to a CLI command to slightly modify user-facing
+behavior.</p>
+<span id="continue-reading"></span>
+<p>So, I started by implementing the functionality change in the core system. Having updated the core,
+it quickly became apparent that the change needed to propagate to the internal API that the core
+exposes. That API then needed to be called by an SDK. Updating that was trivial, as it is a
+statically generated SDK.</p>
+<p>Once I made the changes to expose the new functionality in the SDK, I realized the CLI didn’t use
+the generated SDK directly. Instead, it relied on a wrapper SDK that provided convenience features
+and a more idiomatic developer experience.</p>
+<p>I therefore updated the wrapper SDK, and finally modified the CLI to add the flag and invoke the new
+method. Done!</p>
+<h1 id="the-multi-repo-tax">The Multi-Repo Tax</h1>
+<p>I am not questioning the architecture of exposing functionality via two layers of SDKs called by a
+CLI. In fact, for the project I was working on, this design made complete sense. The real pain point
+was that to implement this tiny feature, I had to execute an entire release process for the core
+system, the bare-bones SDK, and the wrapper SDK, touching a total of four repositories.</p>
+<p>All this friction just to add a single flag to a CLI!</p>
+<h1 id="the-price-of-cascading-releases">The Price of Cascading Releases</h1>
+<p>Because every component in the project released versioned artifacts used downstream, introducing
+this small feature required a tedious release cascade:</p>
+<ol>
+<li>Release a new version of the core system.</li>
+<li>Update the raw SDK repository dependency and publish a new raw SDK release.</li>
+<li>Update the wrapper SDK repository dependency and publish a new wrapper SDK release.</li>
+<li>Update the CLI repository dependency to finally implement the flag.</li>
+</ol>
+<p>And what if I then realized I made a conceptual error in the core? I would have to replay the entire
+multi-repo release game from scratch.</p>
+<p>Friends never fall short in telling me that I have a proclivity to care about engineering practices
+many consider pointless or overkill. Unsurprisingly, I jumped onto the monorepo vs. multi-repo
+bandwagon when I first heard about it. While there is no silver bullet regarding repository
+boundaries, I find it baffling how rarely people evaluate how repositories are shaped. Engineers and
+architects can debate software design patterns and architectural principles for weeks, yet no one
+loses a second's thought to repository layout. Why is that?</p>
+<h1 id="unlocking-atomic-velocity-with-monorepos">Unlocking Atomic Velocity with Monorepos</h1>
+<p>You can mitigate this friction in multi-repo setups by following unpinned branches rather than
+versioned dependencies, but that introduces dangerous build brittleness (such as silent upstream
+breaks).</p>
+<p>A simpler, proven alternative is consolidating these components into a single repository. A monorepo
+enables you to test the entire dependency chain without publishing intermediate releases. Downstream
+components simply reference the latest commit. Developers get immediate feedback if an upstream
+change breaks a downstream contract, and changes can be made atomically across component boundaries
+in a single pull request.</p>
+<h1 id="real-world-impact-enterprise-consolidation">Real-World Impact: Enterprise Consolidation</h1>
+<p>Ironically, repository layout is something I have held close to my heart for quite some time (see my
+<a href="../a-comprehensive-guide-to-managing-large-scale-infrastructure-with-gitops">previous post on using monorepos for infrastructure management</a>).
+I am proud to say this is one of the rare instances where the enterprise projects I work on are
+further along than the open-source tooling I contribute to.</p>
+<p>Over the last 18 months, we made a concerted push to consolidate repositories in my primary mandate.
+Not only did we drastically reduce repository count, making code discovery effortless for new
+joiners, but we also eliminated massive developer friction. Where developers previously had to
+coordinate three or four inter-dependent PRs, a single PR now suffices.</p>
+<p>Crucially, we still release components individually when other teams require access to our
+frameworks. Internally, however, we are no longer trapped in hyper-frequent micro-releases just to
+consume our own updates. This holds true whether managing application code or GitOps infrastructure
+configurations.</p>
+<h1 id="the-catch-ci-complexity">The Catch: CI Complexity</h1>
+<p>Monorepos are not without trade-offs. They require a significantly higher upfront investment in
+continuous integration logic. As the codebase grows, running your entire build and test suite on
+every commit becomes unsustainable.</p>
+<p>Instead, you must implement intelligent change detection to run CI pipelines selectively based on
+modified paths, a task far more complex than most anticipate. Fortunately, because companies like
+Google, Meta, Uber, and X have leveraged monorepos for decades, modern build tools (such as Bazel,
+Nx, or Turborepo) have emerged to solve these exact scaling challenges.</p>
+<h1 id="summary">Summary</h1>
+<p>Choosing your repository strategy isn't just an administrative decision, it dictates your team's
+day-to-day iteration speed. While multi-repo setups offer clean ownership boundaries, they introduce
+severe release friction for tightly coupled dependencies.</p>
+<p>If your team spends more time coordinating cascading releases than writing code, it might be time to
+stop debating design patterns and take a hard look at your repository boundaries.</p>
+
+        </div>
+
+        
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h">Thanks for reading! Read other posts?</span>
+                    <hr />
+                </div>
+                <div class="pagination__buttons">
+                        <span class="button previous">
+                            <a href="https://f4z3r.github.io/why-kcl-matters-for-platform-engineers/">
+                                <span class="button__icon">←</span>&nbsp;
+                                <span class="button__text">Why KCL Matters for Platform Engineers</span>
+                            </a>
+                        </span>
+                    
+                    </div>
+            </div>
+        
+       <div class="pagination">
+         <div class="pagination__title">
+           <span class="pagination__title-h">Comment Section</span>
+           <hr />
+         </div>
+       </div>
+
+      <div class="giscus comments"></div>
+      <script src="https://giscus.app/client.js"
+        data-repo="f4z3r/f4z3r.github.io"
+        data-repo-id="R_kgDON5I2cQ"
+        data-category="Ideas"
+        data-category-id="DIC_kwDON5I2cc4Cm_yp"
+        data-mapping="og:title"
+        data-strict="1"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="gruvbox_dark"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </div>
+
+    </div>
+
+    
+    <footer class="footer">
+        <div class="footer__inner">
+                <div class="copyright">
+                        <span>© 
+    2026
+ Jakob Beckmann</span>
+                    <span class="copyright-theme">
+                        <span class="copyright-theme-sep">:: </span>
+                        This work is licenced under <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.en">CC BY-SA 4.0</a>
+                    </span>
+                </div>
+            </div>
+    </footer>
+    
+
+</div>
+<div id="fullpage" style="display: none;">
+  <span class="close-btn">&times;</span>
+  <img id="fullscreen-image" src="" alt="">
+</div>
+<script src="https://f4z3r.github.io/js/zoomable-images.js"></script>
+</body>
+
+</html>
