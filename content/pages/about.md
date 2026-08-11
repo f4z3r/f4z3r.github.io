@@ -16,8 +16,8 @@ I work on a variety of projects in various roles, such as:
   Previously I have contributed to [wasmCloud](https://wasmcloud.com/),
   [HashiCorp Vault](https://www.hashicorp.com/en/products/vault), the Kubernetes ecosystem, and
   various others.
-- maintaining of the [`gruvbox-material.nvim`](https://github.com/f4z3r/gruvbox-material.nvim)
-  NeoVim plugin.
+- maintaining of the [`gruvbox-material.nvim`](https://github.com/f4z3r/gruvbox-material.nvim) and
+  [`yankcraft.nvim`](https://github.com/f4z3r/yankcraft.nvim) NeoVim plugins.
 - writing of a couple Lua tools and libraries such as [`sofa`](https://github.com/f4z3r/sofa),
   [`luatext`](https://github.com/f4z3r/luatext), [`luatables`](https://github.com/f4z3r/luatables),
   and [`luakube`](https://github.com/f4z3r/luakube).
