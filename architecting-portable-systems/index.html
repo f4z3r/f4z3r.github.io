@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Architecting Portable Systems on Open Standards for Digital Sovereignty | f4z3r&#x27;s blog</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://f4z3r.github.io/style.css">
+    <link rel="stylesheet" href="https://f4z3r.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://f4z3r.github.io/color/background_dark.css">
+    
+    <link rel="stylesheet" href="https://f4z3r.github.io/font-hack-subset.css">
+
+    <meta name="description" content="">
+
+    <meta property="og:description" content="">
+    <meta property="og:title" content="Architecting Portable Systems on Open Standards for Digital Sovereignty | f4z3r's blog">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://f4z3r.github.io/architecting-portable-systems/">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:title" content="Architecting Portable Systems on Open Standards for Digital Sovereignty | f4z3r's blog">
+    <meta property="twitter:domain" content="f4z3r.github.io">
+    <meta property="twitter:url" content="https://f4z3r.github.io/architecting-portable-systems/">
+
+                <link rel="alternate" type="application/rss+xml" title="f4z3r&#x27;s blog RSS Feed" href="https://f4z3r.github.io/rss.xml" />
+                <link rel="alternate" type="application/atom+xml" title="f4z3r&#x27;s blog Atom Feed" href="https://f4z3r.github.io/atom.xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+</head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://f4z3r.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            f4z3r&#x27;s blog
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://f4z3r.github.io">blog</a></li>
+            
+                <li><a href="https://f4z3r.github.io/tags">tags</a></li>
+            
+                <li><a href="https://f4z3r.github.io/about">about me</a></li>
+            
+                <li><a href="https://github.com/f4z3r/" target="_blank" rel="noopener noreferrer">github</a></li>
+            
+                <li><a href="https://www.linkedin.com/in/jakob-beckmann/" target="_blank" rel="noopener noreferrer">linkedin</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://f4z3r.github.io/architecting-portable-systems/">Architecting Portable Systems on Open Standards for Digital Sovereignty</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2026-03-23
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/kubernetes/">#kubernetes</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/open-source/">#open-source</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/sovereignty/">#sovereignty</a></span>
+    
+
+        <div class="post-content">
+            
+  
+  
+    
+    
+  
+  <div style="overflow:hidden;width:100%;height:300px;">
+    <img src="https://f4z3r.github.io/img/architecting-portable-systems/banner.webp" alt="A hand holding a ship." class="center" style="margin:-8% 0" decoding="async" loading="lazy"/>
+  </div>
+
+
+<!--
+vim: ft=liquid
+-->
+<blockquote>
+<p>This article was originally posted on
+<a rel="noopener nofollow noreferrer external" target="_blank" href="https://www.infoq.com/articles/portable-systems-sovereignty/">InfoQ</a>.</p>
+</blockquote>
+<p>Digital sovereignty isn't about building everything yourself; it's about having a valid "Plan B".
+What would your "Plan B" be if your vendor for a critical system suddenly decided to
+<a rel="noopener nofollow noreferrer external" target="_blank" href="https://www.ciodive.com/news/broadcom-vmware-acquistion-vcf-private-cloud/733800/">quadruple its price tag</a>
+or if it decided to abandon product development and suddenly communicated a
+<a rel="noopener nofollow noreferrer external" target="_blank" href="https://techcrunch.com/2022/08/17/google-cloud-will-shutter-its-iot-core-service-next-year/">product "end-of-life" deadline</a>?
+How would you feel if your government were utterly reliant on another geopolitical entity in order
+to sustain basic (digital) operations? What if your access to a SaaS provider were suddenly revoked
+due to international sanctions?</p>
+<p>In this article I will dive into three aspects of digital sovereignty and illustrate how
+architectural choices and constraints can help address the scenarios described above. I will share
+some insights into the benefits and risks of building "sovereign systems", and illustrate high-level
+examples why this architectural choice might be more challenging than most people expect. As a
+software architect working for various large enterprises, I share insights into open standards as
+one of the main pillars to achieve sovereignty. It should, however, be noted that sovereignty is a
+much larger topic overall.</p>
+<span id="continue-reading"></span><h1 id="digital-sovereignty">Digital Sovereignty</h1>
+<p>Digital sovereignty is a hot topic at the moment. This topic applies to both governments, such as
+the EU, which has released sovereignty guidelines like the
+<a rel="noopener nofollow noreferrer external" target="_blank" href="https://commission.europa.eu/document/download/09579818-64a6-4dd5-9577-446ab6219113_en">Cloud Sovereignty Framework</a>,
+and to private companies, who are overly reliant on vendors with abusive pricing power.</p>
+<p>In the world of software enterprises, digital sovereignty can typically be broken down into four
+axes: data sovereignty, technological sovereignty, operational sovereignty, and general IT
+governance/strategy. For the technological and operational sides, sovereignty tends to be defined as
+the ability to utilize, develop, and operate digital solutions independently. In other words, it is
+a question of control over these solutions. The governance aspect defines how controls can be put in
+place to ensure sovereignty practices are pursued. In this article, I will focus on technology,
+operations, and governance, because data sovereignty often heavily touches on legal matters.</p>
+<p>First and foremost, absolute digital sovereignty is an illusion. In our global economy, no country
+can claim that it could continue to develop and operate software with full independence. While
+countries at the forefront of the software revolution, such as the United States, have a massive
+advantage, they too are dependent on others to provide raw materials and to produce some of the
+hardware components required to keep their complex software systems operational. This illusion of
+independence is even more true for individual businesses.</p>
+<p>Because absolute sovereignty is not achievable, organizations should deliberately consider which of
+their systems are truly critical for their business, and focus sovereignty efforts on these systems
+or processes. Moreover, sovereignty does not imply that the companies should then do everything
+themselves in order to be sovereign. This misconception leads businesses to think they need to
+operate their own data centers and build every piece of software themselves. While this exercise
+would not only be impossible in practice, it would result in extreme operational costs with
+dependencies shifted down into the technology stack. After all, does your company also build their
+own hardware and produce their own electricity to operate their data centers? Sovereignty is about
+avoiding strong dependencies on individual vendors or geopolitical entities. It is therefore not an
+issue if an organization relies on services from a vendor, as long as a shift to another vendor
+providing equivalent services is possible within an acceptable cost range.</p>
+
+  <figure class="center" >
+    <div class="zoomable-image-container">
+      <img src="/img/architecting-portable-systems/dependency-stack.webp" style="border-radius: 8px;" decoding="async" loading="lazy"/>
+    </div>
+    
+      <figcaption class="center" style="font-weight: bold; font-style: italic;"><p>The dependency stack always has a deeper, hidden layer</p>
+</figcaption>
+    
+  </figure>
+
+<p>But is this sovereignty truly needed? How likely is a scenario where such a dependency actually
+creates an issue? Let us look at a real world example. My work revolves around building container
+platforms that run services for a relatively large governmental organization. This entity
+essentially acts as a cloud provider for various other governmental entities. While geopolitical
+sovereignty is certainly relevant in such a context, let us instead focus on vendor independence,
+which is more subtle. Governmental organizations need to publish larger contracts via a standardized
+process to prevent corruption-prone contracting (i.e.,
+<a rel="noopener nofollow noreferrer external" target="_blank" href="https://www.trade.gov/trade-guide-wto-gpa">publishing via World Trade Organization</a>). These
+contracts are bound to a certain time frame, and need to be renewed periodically. At each renewal,
+there is a good chance that the vendor winning the contract will change. So being overly reliant on
+a vendor or product can prove fatal, because that vendor might not win a follow-up contract. While
+this example focuses on a governmental entity, the private sector behaves similarly. Procurement
+departments typically force vendor rotations, whether due to legislative restrictions or overall IT
+strategic changes.</p>
+<p>In addition, the last couple of years have shown that companies with strong customer lock-in might
+aggressively change their pricing strategies. This change, in turn, leads many businesses to hastily
+try to migrate away from these vendors to avoid high costs in the long run. Such financial risks are
+also a part of the lack of sovereignty of your organization.</p>
+<p>In conclusion, sovereignty is a complex topic that touches on geopolitical, legislative, and
+financial aspects. While being fully independent is not possible, the above examples illustrate the
+need to carefully consider when a strong reliance on vendors is an acceptable risk.</p>
+<h1 id="open-standards">Open Standards</h1>
+<p>Assuming that you identify a set of essential systems for a critical business process of your
+organization, it makes sense to spend some time and money on the consideration of portability of
+these systems to attain a higher level of independence, and thus sovereignty. While having
+battle-proven migration strategies is an essential part of efficiently porting systems, the
+architecture of the system itself very much defines how complex and time-intensive such a migration
+strategy looks like. Building processes and software systems on open standards is a robust way to
+ensure that building migration paths remains relatively low effort.</p>
+<p>An open standard is a formalized set of requirements, specifications, constraints, or guidelines for
+a system that is open for anyone to use without a fee. Such standards have typically attained a
+certain level of maturity and are implemented by various vendors, making their products partially
+interchangeable. Examples of open standards include:</p>
+<ul>
+<li>TCP, IP, and most of the standard network protocols to which we are accustomed.</li>
+<li>TLS, ACME, and other security protocols.</li>
+<li>SVG, PDF, and other document formats. Not all document formats are open standards. PDF for
+instance was proprietary for a long time before being released as an open standard by Adobe.</li>
+<li>USB and PCI as examples on how hardware devices can communicate with one another.</li>
+</ul>
+<p>Most of these standards are protocols or formats. However, in some cases, large open source projects
+become a de facto open standard. As vendors start building on top of these projects and adoption
+soars, the underlying technology is identical across vendors. If spread is broad enough, the piece
+of technology becomes a de facto standard that is respected across these vendors. For instance:</p>
+<ul>
+<li>PostgreSQL as a database engine (AWS Aurora, GCP Alloy DB, Azure DB for PSQL, but even other OSS
+software such as CockroachDB)</li>
+<li>Kubernetes as a container orchestration engine and extensible API (AWS EKS, GCP GKE, Azure AKS,
+OpenShift, and hundreds of other vendors)</li>
+<li>Kafka as an event streaming platform (AWS MSK, GCP Managed Service for Kafka, Azure Event Hub,
+Strimzi, Confluent, ...)</li>
+<li>Prometheus</li>
+<li>OpenTelemetry</li>
+<li>OpenSearch</li>
+<li>Apache Spark</li>
+</ul>
+<p>The establishment of open standards can be seen in the open source community. In recent years, many
+such standards were enterprise-maintained, and tried to revoke control from their users through
+license changes. The most prominent cases were
+<a rel="noopener nofollow noreferrer external" target="_blank" href="https://www.hashicorp.com/en/blog/hashicorp-adopts-business-source-license">HashiCorp changing licenses</a>
+for Terraform and Vault, and the
+<a rel="noopener nofollow noreferrer external" target="_blank" href="https://www.infoq.com/news/2024/03/redis-license-open-source/">changes to Redis</a>. These examples
+put the de facto standards at risk and the community immediately responded with the birth of
+OpenTofu, OpenBao, and Valkey to ensure the continuation of these open standards.</p>
+<p>These examples of licensing wars between vendors and the open source community are a great example
+of the power of open standards. When adopting a proprietary product that is not standard-based, your
+vendor is in a position of power, because you are but one of its customers. On the other hand, your
+vendor is the only one providing its proprietary product, making your demand for it very inelastic.
+When building on open standards, you no longer stand alone against the vendor. The open ecosystem
+protects you against a vendor trying to change the rules of the game. Such vendors then have to
+worry that their customers would be able to quickly move to a different product based on the same
+standard. Your demand for a specific product has suddenly become elastic.</p>
+<p>Considering the relative abundance of open standards, it might seem that designing portable
+solutions is simple enough. However, it turns out to be more complex in practice than most expect.
+The complexity mostly stems from overlooked dependencies to other systems or vendor specific
+functionality.</p>
+<h1 id="exmaple-kubernetes">Exmaple: Kubernetes</h1>
+<p>My first example, in the context of container platforms, looks very simple on the surface. You build
+everything on Kubernetes, which might currently be the most prominent example of a de facto open
+standard. There are many providers of Kubernetes distributions. The product has a very strong
+interface upon which one can develop systems. Thus one would think that building on top of it
+enables extremely easy migrations to a different provider. This thinking is especially true because
+other systems in the cloud native space tend to provide an interface layer on top of the Kubernetes
+API in the form of custom resources and a controller. Thus, even supporting systems complementing
+Kubernetes can be relatively nicely abstracted via its open standard.</p>
+<p>However, looking under the hood this abstraction quickly becomes much more complex. Do the teams
+designing software on Kubernetes truly only use native Kubernetes features, or do they also rely on
+features specific to the Kubernetes distribution currently in use? This reliance can be as simple as
+the storage provider. Is the storage provider you use on Kubernetes shipped with your specific
+Kubernetes distribution? If it is, you will have a full data lock-in, unless you plan to perform a
+storage migration to move your volumes to a different provider, which is quite a challenging task.
+Consider the registry on which you distribute your OCI images and the CI/CD pipelines on which you
+build your software. How will you deal with external systems on which you might accidentally rely?</p>
+<p>In terms of operations, you also need to consider your independence. Are there any critical
+knowledge silos fully contained within a single contractor? What about individuals, even internal
+employees that are essential to the operation of our systems due to their vast
+<a rel="noopener nofollow noreferrer external" target="_blank" href="https://en.wikipedia.org/wiki/Tribal_knowledge">tribal knowledge</a>? Moreover, your level of maturity
+with respect to automation might play a role in your migration decisions. If you perform all your
+resource management manually instead of using approaches such as GitOps, migrating to a different
+provider might be operationally risky and time consuming.</p>
+<p>As you can see, in practice, building fully on open standards is quite complex. This complexity is
+mostly due to the gravity of convenience. Developers tend to choose the easiest path unless an
+enterprise architecture establishes guardrails.</p>
+<h1 id="surviving-vendor-collapse-or-pivot">Surviving Vendor Collapse or Pivot</h1>
+<p>Building on open standards can even help you when you fail to switch vendors. In some cases you
+might build on top of an open standard whose provider no longer remains a viable option and where no
+alternative provider yet exists. The licensing changes to HashiCorp Vault illustrate this scenario.
+In such a case, since you built on an open standard, you have the option to maintain a fork of the
+project yourself, and self-host the solution. Of course this solution needs to be considered with
+great care, because it tends to involve a large investment and requires specialized organizational
+knowledge.</p>
+<p>However, in many such situations, an alternative provider might emerge in the market. In many cases
+the provider might be the community itself, such as with OpenBao, or even a company that sees an
+opportunity. Either way, with such an opportunity, your organization does not have to maintain a
+fork and can rely on external engineering knowhow.</p>
+<h1 id="the-hard-truths">The Hard Truths</h1>
+<p>I hope the above paragraphs clearly state my opinion for considering portability through open
+standards for critical software systems. While designing for portability is not easy, it is one of
+the most effective ways to reduce dependence on external entities. However, this choice comes at a
+cost, and not only a financial one.</p>
+<p>Designing portable systems reduces the hurdle to performing migrations. This approach unfortunately
+also results in an increased migration cadence. While each migration is then simpler and less
+costly, one needs to keep an eye out to ensure the overall migration burden, in its entirety, does
+not increase unconstrained.</p>
+<p>In addition, if a sovereignty risk is access denial to a system that is vendor controlled, one not
+only needs to ensure that a migration is possible, but also ensure that migration is possible
+without access to the vendor system. In other words, restoring to a different system should be
+possible. This caveat is technically complex. In such cases, the organization also needs to consider
+what an acceptable data loss is.</p>
+<p>In the end, enterprise architects are responsible for designing guardrails so that applications and
+sub-systems are portable. These architects must ensure that application architects and developers
+build their systems for simple migrations and that operations are streamlined enough in case of a
+pivot. Additionally, their guardrails must not cause developers too much friction, which can turn
+into a breeding ground for shadow IT through workarounds built to escape the guardrails.</p>
+<p>Assuming that you have strong enterprise architects and that a subset of your systems require some
+level of sovereignty, I strongly encourage you to define an approach for maintaining portable
+systems. Having a clear strategy for achieving system portability is the best reason to stay more
+independent of vendors. While complex, such a structured architectural strategy is what separates a
+passive technology consumer from a truly sovereign digital enterprise.</p>
+
+        </div>
+
+        
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h">Thanks for reading! Read other posts?</span>
+                    <hr />
+                </div>
+                <div class="pagination__buttons">
+                        <span class="button previous">
+                            <a href="https://f4z3r.github.io/beyond-the-pod-webassembly-and-wasmcloud-next-platform-evolution/">
+                                <span class="button__icon">←</span>&nbsp;
+                                <span class="button__text">Beyond the Pod: Why wasmCloud and WebAssembly Might Be the Next Evolution of the Platform</span>
+                            </a>
+                        </span>
+                    
+                    
+                        <span class="button next">
+                            <a href="https://f4z3r.github.io/why-kcl-matters-for-platform-engineers/">
+                                <span class="button__text">Why KCL Matters for Platform Engineers</span>&nbsp;
+                                <span class="button__icon">→</span>
+                            </a>
+                        </span>
+                    </div>
+            </div>
+        
+       <div class="pagination">
+         <div class="pagination__title">
+           <span class="pagination__title-h">Comment Section</span>
+           <hr />
+         </div>
+       </div>
+
+      <div class="giscus comments"></div>
+      <script src="https://giscus.app/client.js"
+        data-repo="f4z3r/f4z3r.github.io"
+        data-repo-id="R_kgDON5I2cQ"
+        data-category="Ideas"
+        data-category-id="DIC_kwDON5I2cc4Cm_yp"
+        data-mapping="og:title"
+        data-strict="1"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="gruvbox_dark"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </div>
+
+    </div>
+
+    
+    <footer class="footer">
+        <div class="footer__inner">
+                <div class="copyright">
+                        <span>© 
+    2026
+ Jakob Beckmann</span>
+                    <span class="copyright-theme">
+                        <span class="copyright-theme-sep">:: </span>
+                        This work is licenced under <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.en">CC BY-SA 4.0</a>
+                    </span>
+                </div>
+            </div>
+    </footer>
+    
+
+</div>
+<div id="fullpage" style="display: none;">
+  <span class="close-btn">&times;</span>
+  <img id="fullscreen-image" src="" alt="">
+</div>
+<script src="https://f4z3r.github.io/js/zoomable-images.js"></script>
+</body>
+
+</html>

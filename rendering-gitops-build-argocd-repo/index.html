@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Rendering GitOps: how we built an ArgoCD repository with KCL | f4z3r&#x27;s blog</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://f4z3r.github.io/style.css">
+    <link rel="stylesheet" href="https://f4z3r.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://f4z3r.github.io/color/background_dark.css">
+    
+    <link rel="stylesheet" href="https://f4z3r.github.io/font-hack-subset.css">
+
+    <meta name="description" content="">
+
+    <meta property="og:description" content="">
+    <meta property="og:title" content="Rendering GitOps: how we built an ArgoCD repository with KCL | f4z3r's blog">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://f4z3r.github.io/rendering-gitops-build-argocd-repo/">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:title" content="Rendering GitOps: how we built an ArgoCD repository with KCL | f4z3r's blog">
+    <meta property="twitter:domain" content="f4z3r.github.io">
+    <meta property="twitter:url" content="https://f4z3r.github.io/rendering-gitops-build-argocd-repo/">
+
+                <link rel="alternate" type="application/rss+xml" title="f4z3r&#x27;s blog RSS Feed" href="https://f4z3r.github.io/rss.xml" />
+                <link rel="alternate" type="application/atom+xml" title="f4z3r&#x27;s blog Atom Feed" href="https://f4z3r.github.io/atom.xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+</head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://f4z3r.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            f4z3r&#x27;s blog
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://f4z3r.github.io">blog</a></li>
+            
+                <li><a href="https://f4z3r.github.io/tags">tags</a></li>
+            
+                <li><a href="https://f4z3r.github.io/about">about me</a></li>
+            
+                <li><a href="https://github.com/f4z3r/" target="_blank" rel="noopener noreferrer">github</a></li>
+            
+                <li><a href="https://www.linkedin.com/in/jakob-beckmann/" target="_blank" rel="noopener noreferrer">linkedin</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://f4z3r.github.io/rendering-gitops-build-argocd-repo/">Rendering GitOps: how we built an ArgoCD repository with KCL</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2026-10-29
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/devops/">#devops</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/gitops/">#gitops</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/kubernetes/">#kubernetes</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/platform-engineering/">#platform-engineering</a></span>
+    
+
+        <div class="post-content">
+            
+  
+  
+    
+    
+  
+  <div style="overflow:hidden;width:100%;height:300px;">
+    <img src="https://f4z3r.github.io/img/kcl-gitops/banner.webp" alt="A prism transforming stacked shapes into orderly sets of cubes." class="center" style="margin:-9% 0" decoding="async" loading="lazy"/>
+  </div>
+
+
+<!--
+vim: ft=liquid
+-->
+<p>Our GitOps repository needed Go templates, Kustomize overlays, CUE schemas, and Python scripts just
+to make configuration changes reasonably safe. Even then, removing a redundant override could
+briefly trigger a downgrade. We decided to rethink how we assembled our Argo CD applications, using
+KCL to generate and validate their definitions before they reached the cluster. In this post, I walk
+through the component model we built, how it changed our review workflow, and where the additional
+machinery earns its keep.</p>
+<span id="continue-reading"></span><h1 id="the-pain-we-started-from">The pain we started from</h1>
+<p>Our GitOps repository had a component directory per deployment unit, a Kustomize overlay per
+platform, and one <code>ApplicationSet</code> per component. Each platform patched the Git file generator so
+that Go templates could read its configuration:</p>
+<pre class="giallo" style="color: #EBDBB2; background-color: #282828;"><code data-lang="yaml"><span class="giallo-l"><span style="color: #8EC07C;">destination</span><span style="color: #A89984;">:</span></span>
+<span class="giallo-l"><span style="color: #8EC07C;">  namespace</span><span style="color: #A89984;">: &quot;</span><span style="color: #B8BB26;">team-widget-{{ .platform.env }}</span><span style="color: #A89984;">&quot;</span></span>
+<span class="giallo-l"><span style="color: #8EC07C;">syncOptions</span><span style="color: #A89984;">:</span></span>
+<span class="giallo-l"><span style="color: #A89984;">  -</span><span style="color: #B8BB26;"> ApplyOutOfSyncOnly={{ dig &quot;components&quot; &quot;widget&quot; &quot;syncOptions&quot; &quot;ApplyOutOfSyncOnly&quot; &quot;true&quot; . }}</span></span></code></pre>
+<p>This worked, but understanding a change meant mentally evaluating templates, platform values, and
+defaults. The files we reviewed were the inputs to an <code>Application</code>, rather than the <code>Application</code>
+itself.</p>
+<p>Initially, we only saw the generated result after a change landed on <code>main</code> and the controllers
+reconciled it. We added CUE schemas and Python scripts to check that configuration was valid and
+that the <code>dig</code> lookups resolved. Eventually, we also built a pipeline that asked Argo CD to render
+changes before merging and posted the diff on the pull request.</p>
+<p>That improved visibility, but the feedback loop could take tens of minutes. We had assembled several
+technologies and a cluster-dependent workflow to make one abstraction trustworthy.</p>
+<p>There was another problem that validation alone did not solve.</p>
+<h2 id="when-a-cleanup-becomes-a-downgrade">When a cleanup becomes a downgrade</h2>
+<p>Suppose a component defaults to version 1, but a platform overrides it to version 2. Once every
+platform uses version 2, we update the component default and remove the overrides. This should leave
+the resulting applications unchanged.</p>
+<p>In our setup, however, the <code>ApplicationSet</code> template and the platform configuration used by its Git
+generator were updated through separate reconciliation paths. We observed a sequence where the
+generator picked up the removal of an override before the controller received the updated template.
+The controller temporarily combined the new platform configuration with the old default, generating
+an <code>Application</code> pointing back to version 1.</p>
+<p>With automated sync, that could trigger a downgrade, followed by another upgrade once the remaining
+configuration caught up.</p>
+<p>This was a consequence of how we assembled and reconciled those inputs. The
+<a rel="noopener nofollow noreferrer external" target="_blank" href="https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Git/">Git generator documentation</a>
+describes polling and revision-cache behavior, but the important point for our design was simpler:
+we wanted to resolve component defaults and platform overrides together, before either reached the
+cluster.</p>
+<h1 id="the-design">The design</h1>
+<p>We replaced the ApplicationSet templates with a small KCL module. Its model has two parts:</p>
+<ul>
+<li><strong>Components</strong> describe a deployment unit: one or more related Helm charts, their defaults, and
+the settings shared across platforms.</li>
+<li><strong>Platforms</strong> select the components to deploy to a Kubernetes cluster and specify the differences
+from those defaults.</li>
+</ul>
+<p>A render step turns each platform definition into concrete Argo CD <code>Application</code> resources. CI
+writes those resources to <code>manifests/&lt;platform&gt;/</code>, which is the configuration Argo CD consumes.</p>
+<p>There are still two rendering stages. KCL generates the <code>Application</code> definitions before deployment.
+Argo CD then renders the Helm charts referenced by those applications and reconciles their
+resources. We moved the composition of applications out of the cluster; we kept Helm rendering in
+Argo CD.</p>
+<p>This applies the <a rel="noopener nofollow noreferrer external" target="_blank" href="https://akuity.io/blog/the-rendered-manifests-pattern">rendered manifests pattern</a>
+to the application-definition layer. We do not store the final Helm-generated workload manifests in
+Git.</p>
+<h2 id="components-the-typed-vocabulary">Components: the typed vocabulary</h2>
+<p>A component is a value in a KCL package. It holds the defaults that should be shared across
+platforms: chart revisions, Helm release-name settings, values, namespace prefixes, sync policy, and
+labels.</p>
+<pre class="giallo" style="color: #EBDBB2; background-color: #282828;"><code data-lang="KCL"><span class="giallo-l"><span style="color: #928374;font-style: italic;"># components/web/widget.k</span></span>
+<span class="giallo-l"><span style="color: #FB4934;">import</span><span> file</span></span>
+<span class="giallo-l"><span style="color: #FB4934;">import</span><span> yaml</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #FB4934;">import</span><span> ..lib </span><span style="color: #FB4934;">as</span><span> lib</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>widget = lib.Component {</span></span>
+<span class="giallo-l"><span>    name = </span><span style="color: #B8BB26;">&quot;web/widget&quot;</span></span>
+<span class="giallo-l"><span>    namespacePrefix = </span><span style="color: #B8BB26;">&quot;team-widget-&quot;</span></span>
+<span class="giallo-l"><span>    charts = [</span></span>
+<span class="giallo-l"><span>        lib.Chart {</span></span>
+<span class="giallo-l"><span>            name = </span><span style="color: #B8BB26;">&quot;acme/widget&quot;</span></span>
+<span class="giallo-l"><span>            version = </span><span style="color: #B8BB26;">&quot;acme/widget/v1.4.2&quot;</span></span>
+<span class="giallo-l"><span>            releaseName = </span><span style="color: #B8BB26;">&quot;widget&quot;</span></span>
+<span class="giallo-l"><span>            values = yaml.decode(file.read(</span><span style="color: #B8BB26;">&quot;widget.values.yaml&quot;</span><span>))</span></span>
+<span class="giallo-l"><span>        }</span></span>
+<span class="giallo-l"><span>        lib.Chart {</span></span>
+<span class="giallo-l"><span>            name = </span><span style="color: #B8BB26;">&quot;acme/widget-sidecar&quot;</span></span>
+<span class="giallo-l"><span>            version = </span><span style="color: #B8BB26;">&quot;acme/widget-sidecar/v0.3.0&quot;</span></span>
+<span class="giallo-l"><span>            releaseName = </span><span style="color: #B8BB26;">&quot;widget-sidecar&quot;</span></span>
+<span class="giallo-l"><span>        }</span></span>
+<span class="giallo-l"><span>    ]</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>The version strings follow our repository's chart-tag convention. They identify the revision of the
+chart source, separately from any container image tag supplied through Helm values.</p>
+<p>A component can contain more than one chart when those charts belong to the same deployment unit.
+Each chart becomes one source in the resulting <code>Application</code>. They therefore share an Argo CD
+application lifecycle. This is useful for closely related charts, but would be an awkward way to
+group otherwise independent applications.</p>
+<p>Although we configure a <code>releaseName</code> for each Helm source, Argo CD manages the deployed resources
+itself. It uses
+<a rel="noopener nofollow noreferrer external" target="_blank" href="https://argo-cd.readthedocs.io/en/latest/user-guide/helm/">Helm to generate manifests</a>, rather than
+managing ordinary Helm releases.</p>
+<p>There is no separate component registry to maintain. A component is a top-level variable, and a
+platform refers to it by symbol, such as <code>web.widget</code>.</p>
+<h2 id="platforms-explicit-differences">Platforms: explicit differences</h2>
+<p>A platform directory contains a <code>platform.k</code> file with its name, environment, selected components,
+and chart overrides. Values that differ from the component defaults live in YAML files next to it:</p>
+<pre class="giallo" style="color: #EBDBB2; background-color: #282828;"><code data-lang="KCL"><span class="giallo-l"><span style="color: #928374;font-style: italic;"># platforms/p-north-01/platform.k</span></span>
+<span class="giallo-l"><span style="color: #FB4934;">import</span><span> ...components </span><span style="color: #FB4934;">as</span><span> gitops</span></span>
+<span class="giallo-l"><span style="color: #FB4934;">import</span><span> ...components.core </span><span style="color: #FB4934;">as</span><span> core</span></span>
+<span class="giallo-l"><span style="color: #FB4934;">import</span><span> ...components.web </span><span style="color: #FB4934;">as</span><span> web</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #FB4934;">import</span><span> file</span></span>
+<span class="giallo-l"><span style="color: #FB4934;">import</span><span> yaml</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>name = </span><span style="color: #B8BB26;">&quot;p-north-01&quot;</span></span>
+<span class="giallo-l"><span>env = </span><span style="color: #B8BB26;">&quot;d&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>applications = gitops.manifests(name, env, [</span></span>
+<span class="giallo-l"><span>    {</span></span>
+<span class="giallo-l"><span>        component = web.widget</span></span>
+<span class="giallo-l"><span>        charts = [</span></span>
+<span class="giallo-l"><span>            {</span></span>
+<span class="giallo-l"><span>                name = </span><span style="color: #B8BB26;">&quot;acme/widget&quot;</span></span>
+<span class="giallo-l"><span>                values = yaml.decode(file.read(</span><span style="color: #B8BB26;">&quot;widget.values.override.yaml&quot;</span><span>))</span></span>
+<span class="giallo-l"><span>            }</span></span>
+<span class="giallo-l"><span>        ]</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"><span>    {</span></span>
+<span class="giallo-l"><span>        component = core.queue</span></span>
+<span class="giallo-l"><span>        charts = [</span></span>
+<span class="giallo-l"><span>            {</span></span>
+<span class="giallo-l"><span>                name = </span><span style="color: #B8BB26;">&quot;acme/queue&quot;</span></span>
+<span class="giallo-l"><span>                version = </span><span style="color: #B8BB26;">&quot;acme/queue/v2.0.0&quot;</span></span>
+<span class="giallo-l"><span>            }</span></span>
+<span class="giallo-l"><span>        ]</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"><span>])</span></span></code></pre><pre class="giallo" style="color: #EBDBB2; background-color: #282828;"><code data-lang="yaml"><span class="giallo-l"><span style="color: #928374;font-style: italic;"># platforms/p-north-01/widget.values.override.yaml</span></span>
+<span class="giallo-l"><span style="color: #8EC07C;">image</span><span style="color: #A89984;">:</span></span>
+<span class="giallo-l"><span style="color: #8EC07C;">  tag</span><span style="color: #A89984;">:</span><span style="color: #B8BB26;"> v1.4.2-rc1</span></span></code></pre>
+<p>Here, the widget override selects its chart by name and changes a container image tag through its
+values. The queue override changes the chart revision itself. These are independent choices.</p>
+<p>The split is deliberate: components define shared defaults, while platforms state their exceptions.
+Rolling out a new default means editing the component. Keeping one platform on a different revision
+means setting the override there.</p>
+<h2 id="the-render-step">The render step</h2>
+<p><code>manifests()</code> takes the platform name, environment, and application definitions. It combines the
+component defaults with platform overrides and constructs the Argo CD objects.</p>
+<p>We use generated Argo CD models from the
+<a rel="noopener nofollow noreferrer external" target="_blank" href="https://github.com/kcl-lang/modules/tree/main/argo-cd">KCL community modules</a>, rather than
+maintaining the <code>Application</code> schema ourselves. Our own schemas describe the higher-level component
+and platform inputs; the imported schemas describe the output resources.</p>
+<p>We generate the set of <code>Application</code> resources:</p>
+<pre class="giallo" style="color: #EBDBB2; background-color: #282828;"><code data-lang="KCL"><span class="giallo-l"><span style="color: #928374;font-style: italic;"># components/manifests.k</span></span>
+<span class="giallo-l"><span style="color: #FB4934;">import</span><span> argo_cd.v</span><span style="color: #D3869B;">1</span><span>alpha</span><span style="color: #D3869B;">1</span><span>.argoproj_io_v</span><span style="color: #D3869B;">1</span><span>alpha</span><span style="color: #D3869B;">1</span><span>_application </span><span style="color: #FB4934;">as</span><span> argo</span></span>
+<span class="giallo-l"><span style="color: #928374;font-style: italic;"># some code is omitted...</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #928374;font-style: italic;"># one ArgoCD source per chart of the component, with the platform&#39;s overrides</span></span>
+<span class="giallo-l"><span>source = </span><span style="color: #FB4934;">lambda</span><span> chart: Chart, overrides: [ChartOverride] -&gt; </span><span style="color: #FB4934;">any</span><span> {</span></span>
+<span class="giallo-l"><span>    override = overrides[0] </span><span style="color: #FB4934;">if</span><span> overrides </span><span style="color: #FB4934;">else</span><span> {}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #928374;font-style: italic;">    # the union re-evaluates the derived attributes, so `version_is_tag` is about</span></span>
+<span class="giallo-l"><span style="color: #928374;font-style: italic;">    # the effective version</span></span>
+<span class="giallo-l"><span>    effective = chart | {</span></span>
+<span class="giallo-l"><span>        **({</span><span style="color: #B8BB26;">&quot;version&quot;</span><span> = override.version} </span><span style="color: #FB4934;">if</span><span> override.version </span><span style="color: #FB4934;">else</span><span> {})</span></span>
+<span class="giallo-l"><span>        **({</span><span style="color: #B8BB26;">&quot;releaseName&quot;</span><span> = override.releaseName} </span><span style="color: #FB4934;">if</span><span> override.releaseName </span><span style="color: #FB4934;">else</span><span> {})</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    values = {**chart.values, **override.values}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    {</span></span>
+<span class="giallo-l"><span>        repoURL: effective.repoURL</span></span>
+<span class="giallo-l"><span>        path: effective.path</span></span>
+<span class="giallo-l"><span>        targetRevision: effective.version</span></span>
+<span class="giallo-l"><span>        helm = {</span></span>
+<span class="giallo-l"><span>            releaseName = effective.releaseName</span></span>
+<span class="giallo-l"><span>            **({</span><span style="color: #B8BB26;">&quot;valuesObject&quot;</span><span> = values} </span><span style="color: #FB4934;">if</span><span> values </span><span style="color: #FB4934;">else</span><span> {})</span></span>
+<span class="giallo-l"><span>        }</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #928374;font-style: italic;"># NB: no local may be called `name`, dict literal keys shadow it</span></span>
+<span class="giallo-l"><span>application = </span><span style="color: #FB4934;">lambda</span><span> app: Application, platform: </span><span style="color: #FABD2F;">str</span><span>, env: </span><span style="color: #FABD2F;">str</span><span> -&gt; argo.Application {</span></span>
+<span class="giallo-l"><span>    component = app.component</span></span>
+<span class="giallo-l"><span>    application_name = app.name </span><span style="color: #FB4934;">or</span><span> component.name.replace(</span><span style="color: #B8BB26;">&quot;/&quot;</span><span>, </span><span style="color: #B8BB26;">&quot;-&quot;</span><span>)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    chart_names = [c.name </span><span style="color: #FB4934;">for</span><span> c </span><span style="color: #FB4934;">in</span><span> component.charts]</span></span>
+<span class="giallo-l"><span>    unnamed = [o </span><span style="color: #FB4934;">for</span><span> o </span><span style="color: #FB4934;">in</span><span> app.charts </span><span style="color: #FB4934;">if not</span><span> o.name]</span></span>
+<span class="giallo-l"><span style="color: #FB4934;">    assert</span><span> len(unnamed) == 0 </span><span style="color: #FB4934;">or</span><span> len(component.charts) == </span><span style="color: #D3869B;">1</span><span>, </span><span style="color: #B8BB26;">&quot;component &#39;${component.name}&#39; has ${len(component.charts)} charts, so an override has to set &#39;name&#39;&quot;</span></span>
+<span class="giallo-l"><span>    unknown = [o.name </span><span style="color: #FB4934;">for</span><span> o </span><span style="color: #FB4934;">in</span><span> app.charts </span><span style="color: #FB4934;">if</span><span> o.name </span><span style="color: #FB4934;">and</span><span> o.name </span><span style="color: #FB4934;">not in</span><span> chart_names]</span></span>
+<span class="giallo-l"><span style="color: #FB4934;">    assert</span><span> len(unknown) == 0, </span><span style="color: #B8BB26;">&quot;component &#39;${component.name}&#39; has no chart ${unknown}, it has ${chart_names}&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    argo.Application {</span></span>
+<span class="giallo-l"><span>        metadata = {</span></span>
+<span class="giallo-l"><span style="color: #928374;font-style: italic;">           # some more code...</span></span>
+<span class="giallo-l"><span>        }</span></span>
+<span class="giallo-l"><span>        spec = {</span></span>
+<span class="giallo-l"><span>            project = component.project</span></span>
+<span class="giallo-l"><span>            destination = {</span></span>
+<span class="giallo-l"><span>                server = </span><span style="color: #B8BB26;">&quot;https://kubernetes.default.svc&quot;</span></span>
+<span class="giallo-l"><span>                namespace = (app.namespacePrefix </span><span style="color: #FB4934;">or</span><span> component.namespacePrefix) + env</span></span>
+<span class="giallo-l"><span>            }</span></span>
+<span class="giallo-l"><span>            syncPolicy = {</span></span>
+<span class="giallo-l"><span>                automated = {</span></span>
+<span class="giallo-l"><span>                    selfHeal = component.syncPolicy.selfHeal</span></span>
+<span class="giallo-l"><span>                    prune = component.syncPolicy.prune</span></span>
+<span class="giallo-l"><span>                } </span><span style="color: #FB4934;">if</span><span> component.syncPolicy.automated </span><span style="color: #FB4934;">else</span><span style="color: #D3869B;"> Undefined</span></span>
+<span class="giallo-l"><span>                syncOptions = component.syncPolicy.syncOptions</span></span>
+<span class="giallo-l"><span>            }</span></span>
+<span class="giallo-l"><span>            revisionHistoryLimit = component.revisionHistoryLimit</span></span>
+<span class="giallo-l"><span>            sources = [source(c, overrides_of(app, c)) </span><span style="color: #FB4934;">for</span><span> c </span><span style="color: #FB4934;">in</span><span> component.charts]</span></span>
+<span class="giallo-l"><span>        }</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>and them dump them to files:</p>
+<pre class="giallo" style="color: #EBDBB2; background-color: #282828;"><code data-lang="KCL"><span class="giallo-l"><span>MANIFESTS_DIR = option(</span><span style="color: #B8BB26;">&quot;manifests_dir&quot;</span><span>) </span><span style="color: #FB4934;">or</span><span style="color: #B8BB26;"> &quot;manifests&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #928374;font-style: italic;"># Write one YAML file per application to `manifests/&lt;platform&gt;/&lt;application&gt;.yaml`,</span></span>
+<span class="giallo-l"><span style="color: #928374;font-style: italic;"># so that a plain `kcl run` of a platform dumps its manifests.</span></span>
+<span class="giallo-l"><span>dump = </span><span style="color: #FB4934;">lambda</span><span> platform: </span><span style="color: #FABD2F;">str</span><span>, applications: [</span><span style="color: #FB4934;">any</span><span>] -&gt; </span><span style="color: #FABD2F;">bool</span><span> {</span></span>
+<span class="giallo-l"><span>    dir = file.modpath() + </span><span style="color: #B8BB26;">&quot;/&quot;</span><span> + MANIFESTS_DIR + </span><span style="color: #B8BB26;">&quot;/&quot;</span><span> + platform</span></span>
+<span class="giallo-l"><span>    _created = file.mkdir(dir)</span></span>
+<span class="giallo-l"><span>    _written = [yaml.dump_to_file(a, dir + </span><span style="color: #B8BB26;">&quot;/&quot;</span><span> + a.metadata.name + </span><span style="color: #B8BB26;">&quot;.yaml&quot;</span><span>) </span><span style="color: #FB4934;">for</span><span> a </span><span style="color: #FB4934;">in</span><span> applications]</span></span>
+<span class="giallo-l"><span style="color: #D3869B;">    True</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>manifests = </span><span style="color: #FB4934;">lambda</span><span> {</span></span>
+<span class="giallo-l"><span>    platform: </span><span style="color: #FABD2F;">str</span><span>,</span></span>
+<span class="giallo-l"><span>    env: </span><span style="color: #FABD2F;">str</span><span>,</span></span>
+<span class="giallo-l"><span>    applications: [lib.Application],</span></span>
+<span class="giallo-l"><span>} -&gt; [argo.Application] {</span></span>
+<span class="giallo-l"><span style="color: #FB4934;">    assert</span><span> regex.match(platform, r</span><span style="color: #B8BB26;">&quot;^[a-z]-[a-z0-9-]+$&quot;</span><span>), </span><span style="color: #B8BB26;">&quot;platform name &#39;${platform}&#39; must look like &#39;&lt;letter&gt;-&lt;something&gt;&#39;, e.g. p- or c-&quot;</span></span>
+<span class="giallo-l"><span style="color: #FB4934;">    assert</span><span> regex.match(env, r</span><span style="color: #B8BB26;">&quot;^[a-z]$&quot;</span><span>), </span><span style="color: #B8BB26;">&quot;env &#39;${env}&#39; must be a short lowercase environment letter&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    rendered = [lib.application(app, platform, env) </span><span style="color: #FB4934;">for</span><span> app </span><span style="color: #FB4934;">in</span><span> applications]</span></span>
+<span class="giallo-l"><span>    names = [a.metadata.name </span><span style="color: #FB4934;">for</span><span> a </span><span style="color: #FB4934;">in</span><span> rendered]</span></span>
+<span class="giallo-l"><span>    duplicates = [n </span><span style="color: #FB4934;">for</span><span> n </span><span style="color: #FB4934;">in</span><span> names </span><span style="color: #FB4934;">if</span><span> len([m </span><span style="color: #FB4934;">for</span><span> m </span><span style="color: #FB4934;">in</span><span> names </span><span style="color: #FB4934;">if</span><span> m == n]) &gt; </span><span style="color: #D3869B;">1</span><span>]</span></span>
+<span class="giallo-l"><span style="color: #FB4934;">    assert</span><span> len(duplicates) == 0, </span><span style="color: #B8BB26;">&quot;duplicate application name(s) ${duplicates}&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    _dumped = output.dump(platform, rendered)</span></span>
+<span class="giallo-l"><span>    rendered</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>The renderer writes one file per application to <code>manifests/&lt;platform&gt;/&lt;application&gt;.yaml</code>. Each file
+contains the resolved application definition, including its destination, source revisions, and
+values. Argo CD no longer needs to reconstruct that definition from an ApplicationSet template and
+separately refreshed platform configuration.</p>
+<p>For the earlier default-and-override cleanup, this gives us a useful property: both inputs are
+evaluated together from the same source checkout. If the resolved application has not changed, its
+generated YAML does not change either. This removes the mixed-input failure we encountered; it does
+not make deployment across multiple applications atomic.</p>
+<h1 id="what-changed-for-us">What changed for us</h1>
+<h2 id="the-model-catches-mistakes-before-deployment">The model catches mistakes before deployment</h2>
+<p>The type system makes the configuration easier to navigate. Component references are symbols,
+schemas document the available fields, and mistakes can produce diagnostics close to the input that
+caused them:</p>
+<pre class="giallo" style="color: #EBDBB2; background-color: #282828;"><code data-lang="plain"><span class="giallo-l"><span>error[E2L23]: CompileError</span></span>
+<span class="giallo-l"><span>Cannot add member &#39;componnt&#39; to schema &#39;Application&#39;, did you mean &#39;[&quot;component&quot;]&#39;?</span></span></code></pre>
+<p>Our own checks also catch mistakes that are structurally valid but meaningless in the model. An
+override targeting a nonexistent chart produces an error such as:</p>
+<pre class="giallo" style="color: #EBDBB2; background-color: #282828;"><code data-lang="plain"><span class="giallo-l"><span>component &#39;infra/docs&#39; has no chart [acme/doc], it has [acme/docs, acme/permission-sync]</span></span></code></pre>
+<p>That is much more useful than finding out later that a configuration change did nothing.</p>
+<p>KCL's <code>check</code> blocks and assertions let us keep configuration rules next to the schemas they
+constrain. For example, we check that namespace prefixes end with <code>-</code>, because we append the
+environment letter, and that application names are unique within a platform. We also require
+distinct release-name settings within a component as a naming safeguard, although that alone cannot
+prove the charts generate distinct Kubernetes resources.</p>
+<p>Not every rule is an error. We warn when a chart revision does not follow our tag convention,
+because we occasionally deploy a branch deliberately. That warning checks our convention; it does
+not establish that the referenced revision exists.</p>
+<p>These checks cover the model we have defined. They do not automatically validate every key in a YAML
+values file against the corresponding chart. The generated <code>Application</code> schema knows about
+<code>helm.valuesObject</code>, but chart-specific values need their own validation. Helm rendering and
+deployment can still fail for reasons outside our KCL model.</p>
+<h2 id="reviewing-the-result-becomes-a-local-operation">Reviewing the result becomes a local operation</h2>
+<p>Our diff command re-renders every platform into a scratch directory and compares the generated
+application definitions with the committed output. A reviewer can see which applications change,
+which source revisions move, and which values or sync settings differ.</p>
+<p>On our repository, local generation takes a few hundred milliseconds on a laptop. That timing covers
+KCL generation of the application resources. It excludes chart downloads, Helm rendering, and
+comparison with live cluster state.</p>
+<p>Previously, getting feedback meant pushing a change and waiting for the pipeline to ask Argo CD to
+render it. That complete loop could take tens of minutes. Now we can inspect the
+application-definition delta locally before pushing anything, and CI posts that delta on the pull
+request.</p>
+<p>The distinction matters: a changed Helm value appears in this diff, but the resulting change to a
+<code>Deployment</code> does not. We can review the exact application configuration we intend to publish
+without claiming that we have already inspected every workload it will produce.</p>
+<h2 id="the-pipeline-owns-the-generated-files">The pipeline owns the generated files</h2>
+<p>Contributors edit components, platform definitions, and values files. They do not edit <code>manifests/</code>
+directly; a check rejects those changes. The pull request contains the source changes, and the
+generated delta is available in its review comments.</p>
+<p>After merge, a second pipeline renders the repository and commits the generated applications. Argo
+CD then picks them up. Generating and committing the output is part of the delivery process, rather
+than a step someone has to remember locally.</p>
+<p>This also gives us two things to inspect when something goes wrong: the source configuration that
+expressed the change and the generated <code>Application</code> that was published.</p>
+<h1 id="what-we-still-own">What we still own</h1>
+<p>Moving generation into CI adds responsibility there. We maintain the component model, rendering and
+diff scripts, and the check protecting the generated directory. The supporting shell scripts and KCL
+amount to a few hundred lines, but line count is only part of the maintenance cost.</p>
+<p>The publication step is now part of the deployment path. If it fails after merge, the generated
+configuration remains behind the source configuration. Concurrent runs also need care: an older
+render must not overwrite output from a newer change. Reproducibility requires keeping the KCL
+toolchain and model dependencies under control, including the generated types for the Argo CD
+version we run.</p>
+<p>KCL is also less familiar to most engineers than YAML or Helm. Its syntax will feel familiar to
+people who know Python, but learning the language and understanding our model still takes time. We
+have replaced a collection of abstractions with one we find easier to reason about; we still have an
+abstraction to maintain.</p>
+<p>Finally, there are useful failure modes this design does not eliminate. A valid <code>Application</code> can
+reference an unavailable chart revision. Helm can reject values or generate resources that the
+target cluster will not accept. Cluster policy still has a role, especially for changes that do not
+pass through this repository.</p>
+<h1 id="why-kcl">Why KCL?</h1>
+<p>Generating applications before deployment does not require KCL. We could have invested further in
+evaluating the existing templates locally, or built a similar model using another configuration
+language.</p>
+<p>What we appreciate about KCL is that the abstractions, types, constraints, and output construction
+live together. We no longer need Go templates for the application definitions, CUE for their input
+schemas, and Python to check the relationship between them.</p>
+<p>The two decisions solve related problems: generating before deployment makes application definitions
+inspectable, while KCL gives us a way to express and validate how those definitions are assembled.</p>
+<p>For a small repository with straightforward applications, maintaining this model might cost more
+than it saves. For us, the repeated platform configuration, shared defaults, and existing validation
+machinery made the trade-off worthwhile.</p>
+<h1 id="day-to-day">Day to day</h1>
+<p>A change now looks like this: edit a component or platform, run the formatter and checks, inspect
+the generated application delta, and open a pull request. CI posts the same kind of delta for the
+reviewer. Once the change is merged, the publication pipeline updates the generated applications and
+Argo CD reconciles them.</p>
+<p>Argo CD still does important work, including rendering Helm charts. It no longer has to assemble our
+application definitions from several layers of templates and platform configuration. That is a
+smaller responsibility, and one we find much easier to debug.</p>
+<h1 id="closing-thoughts">Closing thoughts</h1>
+<p>The most useful change was making the resolved application definition something we could inspect
+before deployment. KCL gave us a typed model for producing it, with constraints that describe how
+our repository is supposed to work.</p>
+<p>If your GitOps repository has accumulated ApplicationSet templates, <code>dig</code> lookups, overlay patches,
+and separate validation scripts, this approach is worth exploring. Start with one deployment unit,
+generate its <code>Application</code> alongside the existing setup, and compare the result. That will tell you
+more about whether the model fits your repository than migrating everything at once.</p>
+<p>And if you want the longer argument for why a compiled, constraint-based language fits platform
+engineering, I wrote about that
+<a rel="noopener nofollow noreferrer external" target="_blank" href="https://f4z3r.github.io/why-kcl-matters-for-platform-engineers/">here</a>.</p>
+
+        </div>
+
+        
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h">Thanks for reading! Read other posts?</span>
+                    <hr />
+                </div>
+                <div class="pagination__buttons">
+                        <span class="button previous">
+                            <a href="https://f4z3r.github.io/open-source-and-monorepos/">
+                                <span class="button__icon">←</span>&nbsp;
+                                <span class="button__text">Why Is No One Talking About Repository Structure?</span>
+                            </a>
+                        </span>
+                    
+                    </div>
+            </div>
+        
+       <div class="pagination">
+         <div class="pagination__title">
+           <span class="pagination__title-h">Comment Section</span>
+           <hr />
+         </div>
+       </div>
+
+      <div class="giscus comments"></div>
+      <script src="https://giscus.app/client.js"
+        data-repo="f4z3r/f4z3r.github.io"
+        data-repo-id="R_kgDON5I2cQ"
+        data-category="Ideas"
+        data-category-id="DIC_kwDON5I2cc4Cm_yp"
+        data-mapping="og:title"
+        data-strict="1"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="gruvbox_dark"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </div>
+
+    </div>
+
+    
+    <footer class="footer">
+        <div class="footer__inner">
+                <div class="copyright">
+                        <span>© 
+    2026
+ Jakob Beckmann</span>
+                    <span class="copyright-theme">
+                        <span class="copyright-theme-sep">:: </span>
+                        This work is licenced under <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.en">CC BY-SA 4.0</a>
+                    </span>
+                </div>
+            </div>
+    </footer>
+    
+
+</div>
+<div id="fullpage" style="display: none;">
+  <span class="close-btn">&times;</span>
+  <img id="fullscreen-image" src="" alt="">
+</div>
+<script src="https://f4z3r.github.io/js/zoomable-images.js"></script>
+</body>
+
+</html>
