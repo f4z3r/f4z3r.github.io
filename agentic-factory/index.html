@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Agentic Factory: Giving AI Agents Superpowers Without Giving Them the Keys | f4z3r&#x27;s blog</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="robots" content="noodp"/>
+
+    <link rel="stylesheet" href="https://f4z3r.github.io/style.css">
+    <link rel="stylesheet" href="https://f4z3r.github.io/color/orange.css">
+
+        <link rel="stylesheet" href="https://f4z3r.github.io/color/background_dark.css">
+    
+    <link rel="stylesheet" href="https://f4z3r.github.io/font-hack-subset.css">
+
+    <meta name="description" content="">
+
+    <meta property="og:description" content="">
+    <meta property="og:title" content="Agentic Factory: Giving AI Agents Superpowers Without Giving Them the Keys | f4z3r's blog">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://f4z3r.github.io/agentic-factory/">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:title" content="Agentic Factory: Giving AI Agents Superpowers Without Giving Them the Keys | f4z3r's blog">
+    <meta property="twitter:domain" content="f4z3r.github.io">
+    <meta property="twitter:url" content="https://f4z3r.github.io/agentic-factory/">
+
+                <link rel="alternate" type="application/rss+xml" title="f4z3r&#x27;s blog RSS Feed" href="https://f4z3r.github.io/rss.xml" />
+                <link rel="alternate" type="application/atom+xml" title="f4z3r&#x27;s blog Atom Feed" href="https://f4z3r.github.io/atom.xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+</head>
+
+<body class="">
+<div class="container">
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="header__logo">
+                    
+                <a href="https://f4z3r.github.io" style="text-decoration: none;">
+                    <div class="logo">
+                      
+                            f4z3r&#x27;s blog
+                        
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        
+        
+                <nav class="menu">
+            <ul class="menu__inner">
+                <li class="active"><a href="https://f4z3r.github.io">blog</a></li>
+            
+                <li><a href="https://f4z3r.github.io/tags">tags</a></li>
+            
+                <li><a href="https://f4z3r.github.io/about">about me</a></li>
+            
+                <li><a href="https://github.com/f4z3r/" target="_blank" rel="noopener noreferrer">github</a></li>
+            
+                <li><a href="https://www.linkedin.com/in/jakob-beckmann/" target="_blank" rel="noopener noreferrer">linkedin</a></li>
+            </ul>
+        </nav>
+    
+    
+        
+    </header>
+    
+
+    <div class="content">
+        
+    <div class="post">
+        
+    <h1 class="post-title"><a href="https://f4z3r.github.io/agentic-factory/">Agentic Factory: Giving AI Agents Superpowers Without Giving Them the Keys</a></h1>
+    <div class="post-meta-inline">
+        
+    <span class="post-date">
+            2026-11-24
+        </span>
+
+    </div>
+
+    
+        <span class="post-tags-inline">
+                :: tags:&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/ai/">#ai</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/devops/">#devops</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/gitops/">#gitops</a>&nbsp;
+                <a class="post-tag" href="https://f4z3r.github.io/tags/platform-engineering/">#platform-engineering</a></span>
+    
+
+        <div class="post-content">
+            
+  
+  
+    
+    
+  
+  <div style="overflow:hidden;width:100%;height:300px;">
+    <img src="https://f4z3r.github.io/img/agentic-factory/banner.webp" alt="A secure gateway as the central building block between agents and capabilities." class="center" style="margin:-9% 0" decoding="async" loading="lazy"/>
+  </div>
+
+
+<!--
+vim: ft=liquid
+-->
+<p>AI coding agents have become ridiculously capable. Give them access to a repository and they can
+navigate code, implement features, run tests, and debug issues with surprisingly little
+intervention.</p>
+<p>But as I started using agents more extensively, I ran into a problem: <strong>the more useful I wanted my
+agent to be, the more access I had to give it.</strong></p>
+<p>Sure, having an agent modify some code is great. But what if it could also inspect my Kubernetes
+clusters, investigate an ArgoCD deployment, search our Confluence documentation, or look up related
+Jira issues?</p>
+<p>Suddenly, I'm handing an autonomous process access to a whole bunch of systems, potentially with the
+same privileges I have. Considering that agents can execute arbitrary shell commands and are
+susceptible to prompt injection, that doesn't sound like a particularly good idea. On top of that,
+while I might have write access to Kubernetes clusters, I know to use GitOps and thus not modify
+Kubernetes resources directly unless in the utmost emergency. Does my agent also know this, and do I
+trust it to not perform changes on the clusters I have access to?</p>
+<span id="continue-reading"></span>
+<p>The core issue isn't capability, it's <strong>control</strong>. I want my agents to be powerful, but I want to
+decide exactly what they can touch, what they can discover, and what they are allowed to change.</p>
+<p>So I started building <a rel="noopener nofollow noreferrer external" target="_blank" href="https://github.com/f4z3r/agentic-factory">Agentic Factory</a>: a small,
+self-hosted environment that lets me run powerful coding agents without giving them credentials to
+the systems they interact with.</p>
+<h2 id="the-idea-separate-capabilities-from-credentials">The Idea: Separate Capabilities from Credentials</h2>
+<p>The fundamental principle is simple: <strong>an agent shouldn't need credentials to use a capability.</strong></p>
+<p>Control works in two directions. First, I control what the agent can discover and invoke, through
+policy, not through the agent's own judgment. Second, I control what the agent can reach, through
+network boundaries, not through hope. Instead of giving an agent my Kubernetes configuration, Jira
+token, and inference API keys, I want it to interact with services that expose only the operations I
+explicitly allow.</p>
+<p>This led me to an architecture with three main components:</p>
+<ul>
+<li>Sandboxed agents: I use <a rel="noopener nofollow noreferrer external" target="_blank" href="https://pi.dev">Pi</a>, running in disposable rootless Podman containers.
+Each agent gets access to its project workspace, development tools, and the internet, but no
+provider credentials or privileged host access.</li>
+<li>A central gateway: <a rel="noopener nofollow noreferrer external" target="_blank" href="https://agentgateway.dev/">agentgateway</a> handles inference routing, MCP
+federation, credentials, policies, and observability. Every agent talks to the same gateway.</li>
+<li>Dedicated MCP servers: Kubernetes, ArgoCD, Jira, and Confluence integrations run as separate
+containers. They hold the credentials required to access their respective systems and are
+reachable through the gateway, not directly from the agent containers.</li>
+</ul>
+<p>The resulting architecture looks something like this:</p>
+
+  <figure class="center" >
+    <div class="zoomable-image-container">
+      <img src="/img/agentic-factory/architecture.webp" style="border-radius: 8px;" decoding="async" loading="lazy"/>
+    </div>
+    
+      <figcaption class="center" style="font-weight: bold; font-style: italic;"><p>Network and capability isolation is the key</p>
+</figcaption>
+    
+  </figure>
+
+<p>Everything is managed through Podman Compose. I can have multiple agents running simultaneously
+against different projects, all sharing the same infrastructure.</p>
+<h3 id="agentgateway-enforces-the-control-plane">Agentgateway Enforces the Control Plane</h3>
+<p>The piece that makes this particularly interesting is agentgateway. It is the control point through
+which every agent interaction flows.</p>
+<p>On the inference side, it exposes a unified API for different providers, including OpenRouter and
+internal OpenAI-compatible inference services. Provider credentials stay in the gateway rather than
+being distributed to every agent.</p>
+<p>On the tooling side, it federates multiple MCP servers into a single endpoint. But more importantly,
+it lets me define which tools an agent is actually allowed to discover and invoke, and which it
+never even sees.</p>
+<p>For example, I can use CEL policies to allow Kubernetes resource inspection while preventing
+resource deletion or modification. The policy is enforced by the gateway, not by the agent's own
+instructions: even a successfully prompt-injected agent cannot invoke a disallowed tool.</p>
+<pre class="giallo" style="color: #EBDBB2; background-color: #282828;"><code data-lang="yaml"><span class="giallo-l"><span style="color: #8EC07C;">mcpAuthorization</span><span style="color: #A89984;">:</span></span>
+<span class="giallo-l"><span style="color: #8EC07C;">  rules</span><span style="color: #A89984;">:</span></span>
+<span class="giallo-l"><span style="color: #A89984;">    -</span><span style="color: #FB4934;"> &gt;</span><span style="color: #FE8019;">-</span></span>
+<span class="giallo-l"><span style="color: #B8BB26;">      mcp.tool.target == &quot;kubernetes&quot; &amp;&amp; mcp.tool.name in [</span></span>
+<span class="giallo-l"><span style="color: #B8BB26;">        &quot;resources_list&quot;,</span></span>
+<span class="giallo-l"><span style="color: #B8BB26;">        &quot;resources_get&quot;,</span></span>
+<span class="giallo-l"><span style="color: #B8BB26;">        &quot;pods_log&quot;</span></span>
+<span class="giallo-l"><span style="color: #B8BB26;">      ]</span></span></code></pre>
+<p>The agent doesn't even discover the tools excluded by the policy.</p>
+<p>Of course, this is not sufficient on its own. The Kubernetes identity used by the MCP server should
+also have restricted RBAC permissions. Similarly, ArgoCD and Atlassian should use appropriately
+scoped credentials.</p>
+<p><strong>Security should be enforced by the systems providing the capabilities, not just by the agent's
+instructions.</strong></p>
+<p>Beyond authorization, agentgateway also provides request guardrails that inspect and mutate tool
+arguments and results in flight. I use builtin guardrail processors to automatically mask sensitive
+data such as email addresses, phone numbers, and API keys before it ever reaches the model. You can
+also scrub secrets or other data from tool responses before they return to the agent.</p>
+<p>Agentgateway also provides centralized logging and analytics, which makes understanding model usage
+and troubleshooting requests considerably easier.</p>
+<h3 id="why-agentgateway">Why agentgateway?</h3>
+<p>There are quite a few AI gateways out there, such as LiteLLM, Kong, or Envoy AI Gateway. So why
+agentgateway?</p>
+<p>Again, I like keeping things simple. Agentgateway does everything I need, without introducing a ton
+of additional complexity.</p>
+<p>It supports inference routing, MCP federation, authentication, authorization policies, and
+observability, all in a single lightweight gateway. It's incredibly fast, easy to deploy, and
+doesn't require an entire infrastructure stack around it.</p>
+<p>What I particularly like is its declarative configuration with hot reloading. Everything is defined
+in YAML, and changes are picked up automatically. No restarts, no API calls, no clicking through a
+UI. Just update a file.</p>
+<p>And the cherry on top? SQLite support for analytics and request logging. No need to deploy and
+maintain a separate PostgreSQL instance just to get some basic observability.</p>
+<p>For a personal setup like mine, that's pretty much perfect. All the capabilities I need, very little
+operational overhead, and everything can be managed through Git.</p>
+<h2 id="sandboxed-but-still-useful">Sandboxed, But Still Useful</h2>
+<p>One thing I didn't want was to make the sandbox so restrictive that it becomes useless for actual
+development. Control is only useful if the agents can still do their jobs.</p>
+<p>My projects use <a rel="noopener nofollow noreferrer external" target="_blank" href="https://mise.jdx.dev/">mise</a> to manage tooling. An agent needs to run
+<code>mise install</code>, download dependencies, execute builds, and occasionally install additional system
+packages.</p>
+<p>Consequently, my Pi containers have internet access and even passwordless <code>sudo</code> inside the
+container. They run under rootless Podman, so becoming root inside the container does not mean
+becoming root on my machine.</p>
+<p>Project directories are mounted read/write, with UID/GID mappings ensuring files created by the
+agent have the correct ownership on the host.</p>
+<p>This is a deliberate trade-off. The sandbox isn't a perfect security boundary: agents can still
+access mounted project files, communicate with public services, and potentially reach internal
+addresses accessible from the host. But they don't inherit my host credentials or directly access
+the dedicated MCP containers through their Podman networks.</p>
+<p>For my development workflow, that's a useful balance between autonomy and control.</p>
+<p>Starting the infrastructure is as simple as:</p>
+<pre class="giallo" style="color: #EBDBB2; background-color: #282828;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #FABD2F;">podman</span><span style="color: #B8BB26;"> compose up</span><span style="color: #D3869B;"> -d</span></span></code></pre>
+<p>And launching another agent against a project:</p>
+<pre class="giallo" style="color: #EBDBB2; background-color: #282828;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #83A598;">PI_WORKSPACE</span><span style="color: #8EC07C;">=</span><span style="color: #A89984;">&quot;</span><span style="color: #83A598;">$PWD</span><span style="color: #A89984;">&quot;</span><span style="color: #FABD2F;"> \</span></span>
+<span class="giallo-l"><span style="color: #B8BB26;">  podman compose</span><span style="color: #D3869B;"> \</span></span>
+<span class="giallo-l"><span style="color: #D3869B;">    -f</span><span style="color: #B8BB26;"> /path/to/agentic-factory/compose.yaml</span><span style="color: #D3869B;"> \</span></span>
+<span class="giallo-l"><span style="color: #D3869B;">    --profile</span><span style="color: #B8BB26;"> agent</span><span style="color: #D3869B;"> \</span></span>
+<span class="giallo-l"><span style="color: #B8BB26;">    run</span><span style="color: #D3869B;"> --rm</span><span style="color: #B8BB26;"> pi</span></span></code></pre>
+<p>Of course I have a <code>pi</code> alias for this command.</p>
+<h3 id="why-pi">Why Pi?</h3>
+<p>There are plenty of great coding agents out there, such as <a rel="noopener nofollow noreferrer external" target="_blank" href="https://opencode.ai/">OpenCode</a> or
+Claude Code. So why Pi?</p>
+<p>I like Pi's philosophy: <strong>do one thing, do it well, and don't add complexity unless you need it.</strong>
+Pi is intentionally minimal, it provides the essentials for coding with an LLM, without elaborate
+planning workflows, built-in sub-agent orchestration, or complex permission systems. If I need extra
+functionality, I add it through extensions rather than working around a framework that already made
+those decisions for me.</p>
+<p>This matters for control because <strong>simpler systems are easier to secure and to reason about</strong>. Every
+moving part is a place where trust can break down, so fewer moving parts means fewer things to get
+wrong. Pi handles the code; agentgateway handles the control plane; Podman handles the sandbox.</p>
+<h2 id="bonus-integrating-internal-inference-with-oidc">Bonus: Integrating Internal Inference with OIDC</h2>
+<p>There's another challenge I encountered at work. Our internal inference platform uses Keycloak for
+authentication through the OIDC device authorization flow.</p>
+<p>That means I can't simply configure a static API key. I need to authenticate interactively and
+periodically refresh the resulting access token.</p>
+<p>I ended up using <a rel="noopener nofollow noreferrer external" target="_blank" href="https://github.com/indigo-dc/oidc-agent">oidc-agent</a> on my host machine.</p>
+<p>The workflow is straightforward: I authenticate once through Keycloak's device flow, and oidc-agent
+manages the encrypted credentials and refresh-token lifecycle. A small host-side script periodically
+obtains a valid access token and writes it to a local file.</p>
+<p>That file is mounted read-only into agentgateway, which supports file-backed credentials:</p>
+<pre class="giallo" style="color: #EBDBB2; background-color: #282828;"><code data-lang="yaml"><span class="giallo-l"><span style="color: #8EC07C;">auth</span><span style="color: #A89984;">:</span></span>
+<span class="giallo-l"><span style="color: #8EC07C;">  key</span><span style="color: #A89984;">:</span></span>
+<span class="giallo-l"><span style="color: #8EC07C;">    value</span><span style="color: #A89984;">:</span></span>
+<span class="giallo-l"><span style="color: #8EC07C;">      file</span><span style="color: #A89984;">:</span><span style="color: #B8BB26;"> /run/inference-tokens/access-token</span></span></code></pre>
+<p>Agentgateway picks up changes to the token file without requiring a restart.</p>
+<p>This means I can use my organization's inference models through the same gateway as OpenRouter,
+without giving my agents access to Keycloak tokens or requiring a custom authentication proxy. The
+agentgateway itself knows nothing about Keycloak, the authentication flow, or even the refresh
+token. It only sees a token that gets updated from time to time.</p>
+<p>This is an optional addition specific to my environment, rather than a requirement for Agentic
+Factory itself.</p>
+<h2 id="what-s-next">What's Next?</h2>
+<p>The setup works well for my current needs, but there are a couple of things I'd like to improve.</p>
+<p>Better network isolation. Currently, agents can access the public internet directly. Ideally, I'd
+introduce egress controls that allow downloads and package installations while preventing direct
+access to internal infrastructure. That would make the gateway a stronger boundary for privileged
+operations.</p>
+<p>Human approval for sensitive operations. Read-only access is a good starting point, but occasionally
+I want an agent to do more than inspect a system. Having an approval mechanism for operations such
+as triggering an ArgoCD synchronization or modifying a Jira issue would be an interesting next step:
+moving from "read by default" to "write by approval."</p>
+<p>And finally, I'd like to make the whole environment more portable, so I can run the same setup not
+only on my laptop but also in my remote Kubernetes environment.</p>
+<h2 id="give-it-a-try">Give It a Try!</h2>
+<p>I published the entire setup here:</p>
+<p><a rel="noopener nofollow noreferrer external" target="_blank" href="https://github.com/f4z3r/agentic-factory">github.com/f4z3r/agentic-factory</a></p>
+<p>It's built around Pi, agentgateway, and rootless Podman, with MCP integrations for Kubernetes,
+ArgoCD, and Atlassian. The repository contains the Compose configuration, sandbox definition, and
+configuration needed to get started.</p>
+<p>It's certainly not a complete security solution, and there are still improvements to make. But I
+think the underlying idea is important: <strong>as agents become more autonomous, we should spend at least
+as much time thinking about how we grant them capabilities as we spend making them more capable.</strong>
+Control isn't something you bolt on after the fact, it's the foundation everything else is built on.</p>
+
+        </div>
+
+        
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h">Thanks for reading! Read other posts?</span>
+                    <hr />
+                </div>
+                <div class="pagination__buttons">
+                        <span class="button previous">
+                            <a href="https://f4z3r.github.io/rendering-gitops-build-argocd-repo/">
+                                <span class="button__icon">←</span>&nbsp;
+                                <span class="button__text">Rendering GitOps: how we built an ArgoCD repository with KCL</span>
+                            </a>
+                        </span>
+                    
+                    </div>
+            </div>
+        
+       <div class="pagination">
+         <div class="pagination__title">
+           <span class="pagination__title-h">Comment Section</span>
+           <hr />
+         </div>
+       </div>
+
+      <div class="giscus comments"></div>
+      <script src="https://giscus.app/client.js"
+        data-repo="f4z3r/f4z3r.github.io"
+        data-repo-id="R_kgDON5I2cQ"
+        data-category="Ideas"
+        data-category-id="DIC_kwDON5I2cc4Cm_yp"
+        data-mapping="og:title"
+        data-strict="1"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="gruvbox_dark"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </div>
+
+    </div>
+
+    
+    <footer class="footer">
+        <div class="footer__inner">
+                <div class="copyright">
+                        <span>© 
+    2026
+ Jakob Beckmann</span>
+                    <span class="copyright-theme">
+                        <span class="copyright-theme-sep">:: </span>
+                        This work is licenced under <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.en">CC BY-SA 4.0</a>
+                    </span>
+                </div>
+            </div>
+    </footer>
+    
+
+</div>
+<div id="fullpage" style="display: none;">
+  <span class="close-btn">&times;</span>
+  <img id="fullscreen-image" src="" alt="">
+</div>
+<script src="https://f4z3r.github.io/js/zoomable-images.js"></script>
+</body>
+
+</html>
